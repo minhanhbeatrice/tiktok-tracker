@@ -1,57 +1,120 @@
-import sqlite3
 import os
 import re
 import unicodedata
 import hashlib
 from datetime import datetime, timedelta
+from contextlib import contextmanager
+
+# Neon Cloud Database URL (Két sắt dữ liệu đám mây an toàn vĩnh viễn)
+NEON_DB_URL = 'postgresql://neondb_owner:npg_1jfDzTkK2YiE@ep-rough-star-ae2vh7hc-pooler.c-2.us-east-2.aws.neon.tech/neondb?sslmode=require'
+DATABASE_URL = os.environ.get('DATABASE_URL', NEON_DB_URL)
+
+USE_POSTGRES = False
+try:
+    if DATABASE_URL and DATABASE_URL.startswith(('postgres://', 'postgresql://')):
+        import psycopg2
+        from psycopg2.extras import RealDictCursor
+        USE_POSTGRES = True
+except Exception:
+    USE_POSTGRES = False
+
+if not USE_POSTGRES:
+    import sqlite3
 
 DB_PATH = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'tracker.db')
 
 def get_db():
-    conn = sqlite3.connect(DB_PATH)
-    conn.row_factory = sqlite3.Row
-    return conn
+    if USE_POSTGRES:
+        url = DATABASE_URL
+        if url.startswith('postgres://'):
+            url = url.replace('postgres://', 'postgresql://', 1)
+        return psycopg2.connect(url, cursor_factory=RealDictCursor)
+    else:
+        conn = sqlite3.connect(DB_PATH)
+        conn.row_factory = sqlite3.Row
+        return conn
+
+@contextmanager
+def db_session():
+    conn = get_db()
+    try:
+        yield conn
+        conn.commit()
+    except Exception:
+        conn.rollback()
+        raise
+    finally:
+        conn.close()
+
+def q(sql):
+    """Chuyển đổi dấu ? thành %s nếu đang dùng PostgreSQL"""
+    if USE_POSTGRES:
+        return sql.replace('?', '%s')
+    return sql
 
 def init_db():
-    with get_db() as conn:
+    with db_session() as conn:
         c = conn.cursor()
-        c.execute('''
-            CREATE TABLE IF NOT EXISTS links (
-                id INTEGER PRIMARY KEY AUTOINCREMENT,
-                slug TEXT UNIQUE NOT NULL,
-                channel_name TEXT NOT NULL,
-                channel_group TEXT DEFAULT 'Nội bộ',
-                platform TEXT DEFAULT 'TikTok',
-                destination_url TEXT NOT NULL,
-                created_at TEXT NOT NULL
-            )
-        ''')
-        c.execute('''
-            CREATE TABLE IF NOT EXISTS clicks (
-                id INTEGER PRIMARY KEY AUTOINCREMENT,
-                link_id INTEGER NOT NULL,
-                clicked_at TEXT NOT NULL,
-                device_type TEXT DEFAULT 'Unknown',
-                ip_hash TEXT,
-                user_agent TEXT,
-                referrer TEXT,
-                FOREIGN KEY (link_id) REFERENCES links(id) ON DELETE CASCADE
-            )
-        ''')
-        c.execute('CREATE INDEX IF NOT EXISTS idx_clicks_time ON clicks (clicked_at)')
-        c.execute('CREATE INDEX IF NOT EXISTS idx_clicks_link ON clicks (link_id, clicked_at)')
-        c.execute('CREATE INDEX IF NOT EXISTS idx_links_slug ON links (slug)')
-        c.execute('CREATE INDEX IF NOT EXISTS idx_links_group ON links (channel_group)')
-        
-        # Tự động cập nhật cột nếu dùng DB cũ
-        c.execute("PRAGMA table_info(links)")
-        cols = [r['name'] for r in c.fetchall()]
-        if 'channel_group' not in cols:
-            c.execute("ALTER TABLE links ADD COLUMN channel_group TEXT DEFAULT 'Nội bộ'")
-        if 'platform' not in cols:
-            c.execute("ALTER TABLE links ADD COLUMN platform TEXT DEFAULT 'TikTok'")
+        if USE_POSTGRES:
+            c.execute('''
+                CREATE TABLE IF NOT EXISTS links (
+                    id SERIAL PRIMARY KEY,
+                    slug VARCHAR(255) UNIQUE NOT NULL,
+                    channel_name VARCHAR(255) NOT NULL,
+                    channel_group VARCHAR(50) DEFAULT 'Nội bộ',
+                    platform VARCHAR(50) DEFAULT 'TikTok',
+                    destination_url TEXT NOT NULL,
+                    created_at VARCHAR(50) NOT NULL
+                );
+            ''')
+            c.execute('''
+                CREATE TABLE IF NOT EXISTS clicks (
+                    id SERIAL PRIMARY KEY,
+                    link_id INTEGER NOT NULL REFERENCES links(id) ON DELETE CASCADE,
+                    clicked_at VARCHAR(50) NOT NULL,
+                    device_type VARCHAR(50) DEFAULT 'Unknown',
+                    ip_hash VARCHAR(64),
+                    user_agent TEXT,
+                    referrer TEXT
+                );
+            ''')
+        else:
+            c.execute('''
+                CREATE TABLE IF NOT EXISTS links (
+                    id INTEGER PRIMARY KEY AUTOINCREMENT,
+                    slug TEXT UNIQUE NOT NULL,
+                    channel_name TEXT NOT NULL,
+                    channel_group TEXT DEFAULT 'Nội bộ',
+                    platform TEXT DEFAULT 'TikTok',
+                    destination_url TEXT NOT NULL,
+                    created_at TEXT NOT NULL
+                )
+            ''')
+            c.execute('''
+                CREATE TABLE IF NOT EXISTS clicks (
+                    id INTEGER PRIMARY KEY AUTOINCREMENT,
+                    link_id INTEGER NOT NULL,
+                    clicked_at TEXT NOT NULL,
+                    device_type TEXT DEFAULT 'Unknown',
+                    ip_hash TEXT,
+                    user_agent TEXT,
+                    referrer TEXT,
+                    FOREIGN KEY (link_id) REFERENCES links(id) ON DELETE CASCADE
+                )
+            ''')
             
-        conn.commit()
+            # Cập nhật cột nếu dùng SQLite cũ
+            c.execute("PRAGMA table_info(links)")
+            cols = [r['name'] for r in c.fetchall()]
+            if 'channel_group' not in cols:
+                c.execute("ALTER TABLE links ADD COLUMN channel_group TEXT DEFAULT 'Nội bộ'")
+            if 'platform' not in cols:
+                c.execute("ALTER TABLE links ADD COLUMN platform TEXT DEFAULT 'TikTok'")
+
+        c.execute('CREATE INDEX IF NOT EXISTS idx_clicks_time ON clicks (clicked_at);')
+        c.execute('CREATE INDEX IF NOT EXISTS idx_clicks_link ON clicks (link_id, clicked_at);')
+        c.execute('CREATE INDEX IF NOT EXISTS idx_links_slug ON links (slug);')
+        c.execute('CREATE INDEX IF NOT EXISTS idx_links_group ON links (channel_group);')
 
 def slugify(text, group='Nội bộ', platform='TikTok'):
     text = text.replace('đ', 'd').replace('Đ', 'd')
@@ -81,8 +144,6 @@ def slugify(text, group='Nội bộ', platform='TikTok'):
     if not clean_name:
         clean_name = 'kenh'
         
-    # Tạo slug hoàn chỉnh: [nền-tảng]-[nhóm]-[tên-kênh]
-    # Ví dụ: tiktok-kenh-chinh, tiktok-kol-mai-anh, fb-fanpage, fb-kol-hoang-long
     slug = f"{p_prefix}-{g_prefix}{clean_name}".replace('--', '-')
     return slug
 
@@ -101,18 +162,26 @@ def create_link(channel_name, destination_url, custom_slug=None, channel_group='
     slug = base_slug
     now = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
     
-    with get_db() as conn:
+    with db_session() as conn:
         c = conn.cursor()
         counter = 1
         while True:
             try:
-                c.execute(
-                    'INSERT INTO links (slug, channel_name, channel_group, platform, destination_url, created_at) VALUES (?, ?, ?, ?, ?, ?)',
-                    (slug, channel_name, group, plat, destination_url, now)
-                )
-                conn.commit()
+                if USE_POSTGRES:
+                    c.execute(
+                        'INSERT INTO links (slug, channel_name, channel_group, platform, destination_url, created_at) VALUES (%s, %s, %s, %s, %s, %s) RETURNING id',
+                        (slug, channel_name, group, plat, destination_url, now)
+                    )
+                    new_id = c.fetchone()['id']
+                else:
+                    c.execute(
+                        'INSERT INTO links (slug, channel_name, channel_group, platform, destination_url, created_at) VALUES (?, ?, ?, ?, ?, ?)',
+                        (slug, channel_name, group, plat, destination_url, now)
+                    )
+                    new_id = c.lastrowid
+                    
                 return {
-                    'id': c.lastrowid,
+                    'id': new_id,
                     'slug': slug,
                     'channel_name': channel_name,
                     'channel_group': group,
@@ -120,12 +189,16 @@ def create_link(channel_name, destination_url, custom_slug=None, channel_group='
                     'destination_url': destination_url,
                     'created_at': now
                 }
-            except sqlite3.IntegrityError:
+            except Exception as e:
+                # Bắt lỗi trùng lặp slug (IntegrityError)
+                conn.rollback()
                 counter += 1
                 slug = f"{base_slug}-{counter}"
+                if counter > 100:
+                    raise e
 
 def get_all_links():
-    with get_db() as conn:
+    with db_session() as conn:
         c = conn.cursor()
         c.execute('''
             SELECT l.id, l.slug, l.channel_name, l.channel_group, l.platform, l.destination_url, l.created_at,
@@ -134,15 +207,15 @@ def get_all_links():
                    MAX(c.clicked_at) as last_clicked
             FROM links l
             LEFT JOIN clicks c ON l.id = c.link_id
-            GROUP BY l.id
+            GROUP BY l.id, l.slug, l.channel_name, l.channel_group, l.platform, l.destination_url, l.created_at
             ORDER BY l.created_at DESC
         ''')
         return [dict(r) for r in c.fetchall()]
 
 def get_link_by_slug(slug):
-    with get_db() as conn:
+    with db_session() as conn:
         c = conn.cursor()
-        c.execute('SELECT * FROM links WHERE slug = ?', (slug,))
+        c.execute(q('SELECT * FROM links WHERE slug = ?'), (slug,))
         r = c.fetchone()
         return dict(r) if r else None
 
@@ -151,9 +224,9 @@ def record_click(slug, device_type='Unknown', ip_address='', user_agent='', refe
     fingerprint_source = f"{ip_address}_{user_agent}_{device_type}"
     ip_hash = hashlib.sha256(fingerprint_source.encode('utf-8')).hexdigest()[:16] if ip_address else 'anonymous'
     
-    with get_db() as conn:
+    with db_session() as conn:
         c = conn.cursor()
-        c.execute('SELECT id, destination_url FROM links WHERE slug = ?', (slug,))
+        c.execute(q('SELECT id, destination_url FROM links WHERE slug = ?'), (slug,))
         link = c.fetchone()
         if not link:
             return None
@@ -161,11 +234,10 @@ def record_click(slug, device_type='Unknown', ip_address='', user_agent='', refe
         link_id = link['id']
         destination_url = link['destination_url']
         
-        c.execute('''
+        c.execute(q('''
             INSERT INTO clicks (link_id, clicked_at, device_type, ip_hash, user_agent, referrer)
             VALUES (?, ?, ?, ?, ?, ?)
-        ''', (link_id, now, device_type, ip_hash, user_agent, referrer))
-        conn.commit()
+        '''), (link_id, now, device_type, ip_hash, user_agent, referrer))
         return destination_url
 
 def get_analytics(start_date=None, end_date=None, group_filter=None):
@@ -187,21 +259,21 @@ def get_analytics(start_date=None, end_date=None, group_filter=None):
     where_sql = ' AND '.join(where_clauses)
     today_str = datetime.now().strftime('%Y-%m-%d')
     
-    with get_db() as conn:
+    with db_session() as conn:
         c = conn.cursor()
         
         # 1. Thống kê theo từng nhóm
         c.execute("SELECT channel_group, COUNT(*) as count FROM links GROUP BY channel_group")
         link_counts = {r['channel_group']: r['count'] for r in c.fetchall()}
         
-        c.execute(f'''
+        c.execute(q(f'''
             SELECT l.channel_group,
                    COUNT(c.id) as clicks,
                    COUNT(DISTINCT c.ip_hash) as unique_visitors
             FROM links l
             LEFT JOIN clicks c ON l.id = c.link_id AND {where_sql}
             GROUP BY l.channel_group
-        ''', params)
+        '''), params)
         group_rows = [dict(r) for r in c.fetchall()]
         
         groups_stat = {
@@ -222,13 +294,13 @@ def get_analytics(start_date=None, end_date=None, group_filter=None):
             channel_params.append(group_filter)
             
         # 2. Tổng quan
-        c.execute(f'''
+        c.execute(q(f'''
             SELECT COUNT(c.id) as total_clicks,
                    COUNT(DISTINCT c.ip_hash) as unique_visitors
             FROM clicks c
             JOIN links l ON c.link_id = l.id
             WHERE {channel_where}
-        ''', channel_params)
+        '''), channel_params)
         ov = c.fetchone()
         overview = dict(ov) if ov else {'total_clicks': 0, 'unique_visitors': 0}
         
@@ -244,12 +316,12 @@ def get_analytics(start_date=None, end_date=None, group_filter=None):
             today_where += ' AND l.channel_group = ?'
             today_params.append(group_filter)
             
-        c.execute(f'''
+        c.execute(q(f'''
             SELECT COUNT(c.id) as today_clicks
             FROM clicks c
             JOIN links l ON c.link_id = l.id
             WHERE {today_where}
-        ''', today_params)
+        '''), today_params)
         td = c.fetchone()
         overview['today_clicks'] = td['today_clicks'] if td else 0
         
@@ -267,8 +339,8 @@ def get_analytics(start_date=None, end_date=None, group_filter=None):
             channel_query += ' WHERE l.channel_group = ?'
             table_params.append(group_filter)
             
-        channel_query += ' GROUP BY l.id ORDER BY clicks DESC, l.created_at DESC'
-        c.execute(channel_query, table_params)
+        channel_query += ' GROUP BY l.id, l.slug, l.channel_name, l.channel_group, l.platform, l.destination_url ORDER BY clicks DESC, l.created_at DESC'
+        c.execute(q(channel_query), table_params)
         channel_rows = [dict(r) for r in c.fetchall()]
         
         total_clicks = overview.get('total_clicks') or 0
@@ -277,12 +349,12 @@ def get_analytics(start_date=None, end_date=None, group_filter=None):
             
         overview['top_channel'] = channel_rows[0]['channel_name'] if (channel_rows and channel_rows[0]['clicks'] > 0) else 'Chưa có'
         
-        # 4. Biểu đồ thời gian
+        # 4. Biểu đồ thời gian (dùng substr để tương thích 100% cả SQLite và PostgreSQL)
         is_same_day = (start_date and end_date and start_date[:10] == end_date[:10])
-        group_format = '%Y-%m-%d %H:00' if is_same_day else '%Y-%m-%d'
+        time_expr = "substr(c.clicked_at, 1, 13) || ':00'" if is_same_day else "substr(c.clicked_at, 1, 10)"
         
-        c.execute(f'''
-            SELECT strftime('{group_format}', c.clicked_at) as time_label,
+        c.execute(q(f'''
+            SELECT {time_expr} as time_label,
                    l.channel_group,
                    COUNT(c.id) as clicks
             FROM clicks c
@@ -290,7 +362,7 @@ def get_analytics(start_date=None, end_date=None, group_filter=None):
             WHERE {channel_where}
             GROUP BY time_label, l.channel_group
             ORDER BY time_label ASC
-        ''', channel_params)
+        '''), channel_params)
         time_rows = [dict(r) for r in c.fetchall()]
         
         return {
@@ -301,23 +373,20 @@ def get_analytics(start_date=None, end_date=None, group_filter=None):
         }
 
 def delete_link(slug):
-    with get_db() as conn:
+    with db_session() as conn:
         c = conn.cursor()
-        c.execute('DELETE FROM links WHERE slug = ?', (slug,))
-        conn.commit()
+        c.execute(q('DELETE FROM links WHERE slug = ?'), (slug,))
 
 def delete_links_batch(slug_list):
     if not slug_list:
         return 0
-    with get_db() as conn:
+    with db_session() as conn:
         c = conn.cursor()
         placeholders = ','.join(['?'] * len(slug_list))
-        c.execute(f'DELETE FROM links WHERE slug IN ({placeholders})', slug_list)
-        conn.commit()
+        c.execute(q(f'DELETE FROM links WHERE slug IN ({placeholders})'), slug_list)
         return c.rowcount
 
 def clear_all_clicks():
-    with get_db() as conn:
+    with db_session() as conn:
         c = conn.cursor()
         c.execute('DELETE FROM clicks')
-        conn.commit()
