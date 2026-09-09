@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Đo Lường Traffic TikTok - Phân Tích Kênh Nội Bộ & KOL</title>
+  <title>Đo Lường Traffic Đa Nền Tảng - Quản Lý & Kho Link</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -21,25 +21,19 @@
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3.5 flex flex-wrap items-center justify-between gap-4">
       <div class="flex items-center space-x-3">
         <div class="w-10 h-10 rounded-xl bg-black text-white flex items-center justify-center text-xl font-black shadow-md">
-          🎵
+          🎯
         </div>
         <div>
           <div class="flex items-center gap-2">
-            <h1 class="text-lg font-black text-slate-900 leading-tight">Đo Lường Traffic TikTok</h1>
-            <span class="px-2 py-0.5 text-[10px] font-bold bg-indigo-100 text-indigo-700 rounded-full">Kênh Nội Bộ vs KOL</span>
+            <h1 class="text-lg font-black text-slate-900 leading-tight">Đo Lường Traffic Đa Nền Tảng</h1>
+            <span class="px-2 py-0.5 text-[10px] font-bold bg-indigo-100 text-indigo-700 rounded-full">TikTok • FB • YT • Threads</span>
           </div>
-          <p class="text-xs text-slate-500">Thống kê tổng & so sánh hiệu quả giữa dàn kênh Nội Bộ và đội ngũ KOL/KOC</p>
+          <p class="text-xs text-slate-500">Tạo link nhận diện nền tảng & kênh, quản lý kho link, đo lường traffic 24/7</p>
         </div>
       </div>
 
       <div class="flex items-center space-x-2">
-        <button onclick="seedDemoData()" title="Tạo click giả lập cho cả kênh Nội bộ và KOL" class="px-3 py-1.5 text-xs font-bold bg-amber-50 text-amber-700 border border-amber-200 rounded-lg hover:bg-amber-100 transition flex items-center gap-1">
-          <span>✨ Nạp click mẫu</span>
-        </button>
-        <button onclick="clearClicks()" title="Reset toàn bộ số lượt click về 0" class="px-2.5 py-1.5 text-xs font-semibold text-slate-600 hover:text-rose-600 border border-slate-200 rounded-lg hover:bg-rose-50 transition">
-          🔄 Reset click về 0
-        </button>
-        <a href="/api/export-csv" class="px-3 py-1.5 text-xs font-bold bg-slate-900 text-white rounded-lg hover:bg-slate-800 transition flex items-center gap-1.5 shadow-sm">
+        <a href="/api/export-csv" class="px-3.5 py-2 text-xs font-bold bg-slate-900 text-white rounded-xl hover:bg-slate-800 transition flex items-center gap-1.5 shadow-sm">
           <span>📥 Xuất Excel/CSV</span>
         </a>
       </div>
@@ -48,20 +42,20 @@
     <!-- Navigation Tabs -->
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex space-x-8 text-sm">
       <button onclick="switchMainTab('dashboard')" id="tab-btn-dashboard" class="py-3 px-1 tab-active flex items-center gap-2">
-        <span>📊 Báo Cáo & Thống Kê Nhóm</span>
+        <span>📊 Báo Cáo & Thống Kê</span>
       </button>
       <button onclick="switchMainTab('generator')" id="tab-btn-generator" class="py-3 px-1 text-slate-500 hover:text-slate-900 flex items-center gap-2">
-        <span>🔗 Tạo Link Cho Kênh (Nội Bộ & KOL)</span>
+        <span>🔗 Tạo Link & Kho Link</span>
       </button>
     </div>
   </header>
 
   <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-6">
 
-    <!-- ==================== TAB 1: DASHBOARD ==================== -->
+    <!-- ==================== TAB 1: BÁO CÁO THỐNG KÊ ==================== -->
     <div id="tab-dashboard" class="space-y-6">
 
-      <!-- Bộ lọc thời gian (Custom Date Filter Bar) -->
+      <!-- Bộ lọc thời gian -->
       <div class="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm flex flex-wrap items-center justify-between gap-4">
         <div class="flex items-center flex-wrap gap-2">
           <span class="text-xs font-bold text-slate-400 uppercase tracking-wider mr-1">Thời gian:</span>
@@ -83,9 +77,9 @@
         </div>
       </div>
 
-      <!-- KHU VỰC ĐẶC BIỆT: THỐNG KÊ SO SÁNH 2 NHÓM (NỘI BỘ VS KOL) -->
+      <!-- Thống kê so sánh 2 nhóm -->
       <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <!-- Card Nhóm Nội Bộ -->
+        <!-- Card Nội Bộ -->
         <div class="bg-gradient-to-br from-slate-900 to-slate-800 text-white p-6 rounded-2xl shadow-md relative overflow-hidden">
           <div class="flex items-center justify-between">
             <div class="flex items-center gap-2">
@@ -105,10 +99,9 @@
               <h4 id="grp-internal-unique" class="text-3xl font-black text-emerald-400 mt-0.5">0</h4>
             </div>
           </div>
-          <p class="text-[11px] text-slate-400 mt-3 italic">Bao gồm: Kênh chính, kênh phụ, bio link, livestream nội bộ...</p>
         </div>
 
-        <!-- Card Nhóm KOL -->
+        <!-- Card KOL -->
         <div class="bg-gradient-to-br from-purple-900 to-indigo-900 text-white p-6 rounded-2xl shadow-md relative overflow-hidden">
           <div class="flex items-center justify-between">
             <div class="flex items-center gap-2">
@@ -128,11 +121,10 @@
               <h4 id="grp-kol-unique" class="text-3xl font-black text-amber-300 mt-0.5">0</h4>
             </div>
           </div>
-          <p class="text-[11px] text-purple-200 mt-3 italic">Bao gồm: Link gắn cho các bạn KOL, KOC, Reviewer, Booking...</p>
         </div>
       </div>
 
-      <!-- THANH CHUYỂN TAB XEM CHI TIẾT (TẤT CẢ / NỘI BỘ / KOL) -->
+      <!-- Lọc theo nhóm -->
       <div class="flex items-center justify-between border-b border-slate-200 pb-2">
         <div class="flex items-center gap-2">
           <span class="text-xs font-bold text-slate-400 uppercase tracking-wider mr-2">Xem chi tiết:</span>
@@ -148,7 +140,7 @@
         </div>
       </div>
 
-      <!-- 4 Thẻ KPI Tổng Quan Theo Bộ Lọc Đang Chọn -->
+      <!-- 4 Thẻ KPI -->
       <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm flex items-center justify-between">
           <div>
@@ -163,10 +155,7 @@
 
         <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm flex items-center justify-between">
           <div>
-            <div class="flex items-center gap-1.5">
-              <p class="text-xs font-bold text-slate-400 uppercase tracking-wider">Khách Unique</p>
-              <span title="Tính theo IP + Thiết bị (phân biệt người dùng chính xác)" class="cursor-help text-xs text-slate-400">ℹ️</span>
-            </div>
+            <p class="text-xs font-bold text-slate-400 uppercase tracking-wider">Khách Unique</p>
             <h3 id="stat-unique" class="text-2xl font-black text-emerald-600 mt-1">0</h3>
             <p class="text-xs text-slate-400 mt-0.5">người bấm thực tế</p>
           </div>
@@ -203,8 +192,8 @@
         <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm flex flex-col">
           <div class="flex items-center justify-between mb-4">
             <div>
-              <h4 class="font-bold text-slate-900 text-sm">Tỉ Lệ Đóng Góp Traffic</h4>
-              <p class="text-xs text-slate-400">Phần trăm lượt click giữa các kênh</p>
+              <h4 class="font-bold text-slate-900 text-sm">Tỉ Lệ Traffic Giữa Các Kênh</h4>
+              <p class="text-xs text-slate-400">% theo lượt click</p>
             </div>
             <span class="text-xs bg-slate-100 text-slate-600 px-2 py-0.5 rounded-full font-bold">%</span>
           </div>
@@ -217,7 +206,7 @@
           <div class="flex items-center justify-between mb-4">
             <div>
               <h4 class="font-bold text-slate-900 text-sm">Diễn Biến Lượt Click Theo Thời Gian</h4>
-              <p class="text-xs text-slate-400">Theo dõi ngày/giờ có video hoặc chiến dịch kéo khách</p>
+              <p class="text-xs text-slate-400">Theo dõi ngày/giờ có chiến dịch kéo khách</p>
             </div>
             <span id="chart-time-label" class="text-xs text-slate-600 bg-slate-100 px-2.5 py-1 rounded-lg font-bold">Theo ngày</span>
           </div>
@@ -227,18 +216,43 @@
         </div>
       </div>
 
-      <!-- Bảng xếp hạng chi tiết các kênh -->
+      <!-- Bảng Danh Sách Link & Bảng Xếp Hạng -->
       <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
         <div class="p-5 border-b border-slate-100 flex flex-wrap items-center justify-between gap-3">
           <div>
             <h4 class="font-bold text-slate-900 text-base">Danh Sách Link & Bảng Xếp Hạng</h4>
-            <p class="text-xs text-slate-500 mt-0.5">Phân loại rõ Nhóm Nội Bộ và Nhóm KOL</p>
+            <p class="text-xs text-slate-500 mt-0.5">Tích chọn để xóa hàng loạt hoặc quản lý qua mục ...</p>
           </div>
+          
           <div class="flex items-center gap-2">
-            <button onclick="copyAllLinks()" class="px-3 py-1.5 text-xs font-bold bg-slate-100 text-slate-700 hover:bg-slate-200 rounded-lg transition flex items-center gap-1">
-              📋 Sao chép tất cả link
-            </button>
-            <button onclick="switchMainTab('generator')" class="px-3.5 py-1.5 text-xs font-bold bg-black text-white hover:bg-slate-800 rounded-lg transition">
+            <!-- Nút xóa chọn nhiều -->
+            <div id="dash-batch-actions" class="hidden items-center gap-2 bg-rose-50 border border-rose-200 px-3 py-1.5 rounded-xl">
+              <span id="dash-selected-count" class="text-xs font-bold text-rose-700">Đã chọn 0 link</span>
+              <button onclick="executeBatchDelete('dash')" class="px-2.5 py-1 text-xs font-bold bg-rose-600 text-white rounded-lg hover:bg-rose-700 transition">
+                🗑️ Xóa đã chọn
+              </button>
+            </div>
+
+            <!-- Menu ... chung của bảng -->
+            <div class="relative inline-block text-left">
+              <button onclick="toggleMenu('menu-dash-table')" class="p-2 rounded-xl border border-slate-200 hover:bg-slate-50 transition text-slate-700 font-black text-sm">
+                •••
+              </button>
+              <div id="menu-dash-table" class="hidden absolute right-0 mt-2 w-48 bg-white rounded-xl shadow-xl border border-slate-100 py-1 z-50 text-xs">
+                <button onclick="selectAllTable('dash', true)" class="w-full text-left px-4 py-2 hover:bg-slate-50 font-medium text-slate-700">
+                  ☑️ Chọn tất cả
+                </button>
+                <button onclick="selectAllTable('dash', false)" class="w-full text-left px-4 py-2 hover:bg-slate-50 font-medium text-slate-700">
+                  ◻️ Bỏ chọn tất cả
+                </button>
+                <div class="border-t border-slate-100 my-1"></div>
+                <button onclick="executeBatchDelete('dash')" class="w-full text-left px-4 py-2 hover:bg-rose-50 font-bold text-rose-600">
+                  🗑️ Xóa các mục đã chọn
+                </button>
+              </div>
+            </div>
+
+            <button onclick="switchMainTab('generator')" class="px-3.5 py-2 text-xs font-bold bg-black text-white hover:bg-slate-800 rounded-xl transition">
               + Tạo link mới
             </button>
           </div>
@@ -248,6 +262,10 @@
           <table class="w-full text-left text-sm">
             <thead class="bg-slate-50 text-slate-600 text-xs uppercase font-bold border-b border-slate-200">
               <tr>
+                <th class="py-3.5 px-4 w-10 text-center">
+                  <input type="checkbox" id="dash-check-all" onchange="toggleCheckAll('dash', this.checked)" class="w-4 h-4 rounded text-black focus:ring-black">
+                </th>
+                <th class="py-3.5 px-4">Nền Tảng</th>
                 <th class="py-3.5 px-4">Nhóm</th>
                 <th class="py-3.5 px-4">Tên Kênh</th>
                 <th class="py-3.5 px-4">Link Đo Lường (Nhìn rõ kênh)</th>
@@ -260,7 +278,7 @@
             </thead>
             <tbody id="channels-table-body" class="divide-y divide-slate-100">
               <tr>
-                <td colspan="8" class="text-center py-8 text-slate-400">Đang tải dữ liệu...</td>
+                <td colspan="10" class="text-center py-8 text-slate-400">Đang tải dữ liệu...</td>
               </tr>
             </tbody>
           </table>
@@ -269,55 +287,89 @@
 
     </div>
 
-    <!-- ==================== TAB 2: TẠO LINK (NỘI BỘ & KOL) ==================== -->
-    <div id="tab-generator" class="hidden max-w-3xl mx-auto space-y-6">
+    <!-- ==================== TAB 2: TẠO LINK & KHO LINK ==================== -->
+    <div id="tab-generator" class="hidden space-y-8 max-w-5xl mx-auto">
 
+      <!-- Form Tạo Link Mới -->
       <div class="bg-white p-6 sm:p-8 rounded-2xl border border-slate-200 shadow-sm space-y-6">
         <div>
           <div class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-slate-100 text-slate-800 text-xs font-bold mb-2">
-            🏷️ Phân Loại Nhóm: Kênh Nội Bộ & Kênh KOL
+            🚀 Công Cụ Sinh Link Đa Nền Tảng
           </div>
-          <h3 class="text-xl font-black text-slate-900">Tạo Link Đo Lường Cho Kênh</h3>
-          <p class="text-sm text-slate-500 mt-1">Chọn nhóm kênh tương ứng để hệ thống tự động gắn tiền tố link và phân nhóm báo cáo.</p>
+          <h3 class="text-xl font-black text-slate-900">Tạo Link Đo Lường Mới</h3>
+          <p class="text-sm text-slate-500 mt-1">Đường link sinh ra sẽ thể hiện rõ cả <b>Nền tảng</b> lẫn <b>Tên kênh</b> (ví dụ: <code class="text-rose-600 font-bold">/r/tiktok-kenh-chinh</code>, <code class="text-blue-600 font-bold">/r/fb-kol-mai-anh</code>).</p>
         </div>
 
-        <!-- 1. Link gốc -->
-        <div class="space-y-1.5">
+        <!-- BƯỚC 1: Chọn Nền Tảng -->
+        <div class="space-y-2">
           <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider">
-            1. Đường link website đích của chị <span class="text-rose-500">*</span>
+            1. Chọn Nền Tảng Tiếp Thị <span class="text-rose-500">*</span>
           </label>
-          <input type="url" id="input-destination" placeholder="Ví dụ: https://my-shop.vn/san-pham" class="w-full px-4 py-3 text-sm border border-slate-300 rounded-xl focus:ring-2 focus:ring-black focus:outline-none transition">
-          <p class="text-xs text-slate-400">Khách bấm vào link ở bất kỳ kênh nào cũng đều chuyển về web này.</p>
+          <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
+            <label class="flex items-center gap-2.5 p-3 rounded-xl border border-slate-200 hover:border-black cursor-pointer transition has-[:checked]:border-black has-[:checked]:bg-slate-50">
+              <input type="radio" name="gen-platform" value="TikTok" checked onchange="updateLivePreview()" class="w-4 h-4 text-black focus:ring-black">
+              <span class="text-sm font-bold text-slate-900 flex items-center gap-1.5">
+                <span>🎵</span> TikTok
+              </span>
+            </label>
+            <label class="flex items-center gap-2.5 p-3 rounded-xl border border-slate-200 hover:border-blue-600 cursor-pointer transition has-[:checked]:border-blue-600 has-[:checked]:bg-blue-50/40">
+              <input type="radio" name="gen-platform" value="Facebook" onchange="updateLivePreview()" class="w-4 h-4 text-blue-600 focus:ring-blue-600">
+              <span class="text-sm font-bold text-slate-900 flex items-center gap-1.5">
+                <span>🔵</span> Facebook
+              </span>
+            </label>
+            <label class="flex items-center gap-2.5 p-3 rounded-xl border border-slate-200 hover:border-red-600 cursor-pointer transition has-[:checked]:border-red-600 has-[:checked]:bg-red-50/40">
+              <input type="radio" name="gen-platform" value="YouTube" onchange="updateLivePreview()" class="w-4 h-4 text-red-600 focus:ring-red-600">
+              <span class="text-sm font-bold text-slate-900 flex items-center gap-1.5">
+                <span>🔴</span> YouTube
+              </span>
+            </label>
+            <label class="flex items-center gap-2.5 p-3 rounded-xl border border-slate-200 hover:border-slate-800 cursor-pointer transition has-[:checked]:border-slate-800 has-[:checked]:bg-slate-100">
+              <input type="radio" name="gen-platform" value="Threads" onchange="updateLivePreview()" class="w-4 h-4 text-black focus:ring-black">
+              <span class="text-sm font-bold text-slate-900 flex items-center gap-1.5">
+                <span>🧵</span> Threads
+              </span>
+            </label>
+          </div>
         </div>
 
-        <!-- 2. Chọn nhóm kênh -->
-        <div class="space-y-1.5">
+        <!-- BƯỚC 2: Chọn Nhóm Kênh -->
+        <div class="space-y-2">
           <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider">
-            2. Chị đang tạo link cho nhóm nào? <span class="text-rose-500">*</span>
+            2. Chọn Nhóm Kênh <span class="text-rose-500">*</span>
           </label>
-          <div class="grid grid-cols-2 gap-3">
-            <label class="flex items-center gap-3 p-3.5 rounded-xl border border-slate-200 hover:bg-slate-50 cursor-pointer transition">
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <label class="flex items-center gap-3 p-3.5 rounded-xl border border-slate-200 hover:bg-slate-50 cursor-pointer transition has-[:checked]:border-black has-[:checked]:bg-slate-50">
               <input type="radio" name="gen-group" value="Nội bộ" checked onchange="updateLivePreview()" class="w-4 h-4 text-black focus:ring-black">
               <div>
                 <p class="text-sm font-bold text-slate-900">🏢 Nhóm Kênh Nội Bộ</p>
-                <p class="text-xs text-slate-400">Kênh chính, kênh phụ, bio, live...</p>
+                <p class="text-xs text-slate-400">Kênh chính, kênh phụ, bio link, livestream...</p>
               </div>
             </label>
-            <label class="flex items-center gap-3 p-3.5 rounded-xl border border-slate-200 hover:bg-purple-50/50 cursor-pointer transition">
+            <label class="flex items-center gap-3 p-3.5 rounded-xl border border-slate-200 hover:bg-purple-50/40 cursor-pointer transition has-[:checked]:border-purple-600 has-[:checked]:bg-purple-50/40">
               <input type="radio" name="gen-group" value="KOL" onchange="updateLivePreview()" class="w-4 h-4 text-purple-600 focus:ring-purple-600">
               <div>
                 <p class="text-sm font-bold text-purple-900">🌟 Nhóm Kênh KOL / KOC</p>
-                <p class="text-xs text-slate-400">KOL booking, review, affiliate...</p>
+                <p class="text-xs text-slate-400">KOL booking, review, affiliate, đối tác...</p>
               </div>
             </label>
           </div>
         </div>
 
-        <!-- 3. Danh sách kênh -->
+        <!-- BƯỚC 3: Link web đích -->
+        <div class="space-y-1.5">
+          <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider">
+            3. Đường link website đích <span class="text-rose-500">*</span>
+          </label>
+          <input type="url" id="input-destination" placeholder="Ví dụ: https://my-shop.vn/san-pham" class="w-full px-4 py-3 text-sm border border-slate-300 rounded-xl focus:ring-2 focus:ring-black focus:outline-none transition">
+          <p class="text-xs text-slate-400">Khách bấm vào link ở bất kỳ kênh nào cũng đều sẽ được chuyển về địa chỉ web này.</p>
+        </div>
+
+        <!-- BƯỚC 4: Danh sách kênh -->
         <div class="space-y-2">
           <div class="flex items-center justify-between">
             <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider">
-              3. Danh sách các kênh (Mỗi kênh 1 dòng) <span class="text-rose-500">*</span>
+              4. Danh sách tên kênh (Mỗi kênh 1 dòng) <span class="text-rose-500">*</span>
             </label>
             <div class="flex items-center gap-1.5 text-xs">
               <span class="text-slate-400">Mẫu nhanh:</span>
@@ -327,40 +379,95 @@
             </div>
           </div>
 
-          <textarea id="input-tiktok-channels" oninput="updateLivePreview()" rows="5" placeholder="Ví dụ nhập:
-TikTok Kênh Chính
-TikTok Kênh Phụ 1
-TikTok Bio Link" class="w-full px-4 py-3 text-sm font-mono border border-slate-300 rounded-xl focus:ring-2 focus:ring-black focus:outline-none transition"></textarea>
+          <textarea id="input-channels" oninput="updateLivePreview()" rows="4" placeholder="Ví dụ nhập:
+Kênh Chính
+Kênh Phụ 1
+Bio Link
+Reviewer Mai Anh" class="w-full px-4 py-3 text-sm font-mono border border-slate-300 rounded-xl focus:ring-2 focus:ring-black focus:outline-none transition"></textarea>
           
-          <!-- Live Preview Link Sẽ Tạo -->
+          <!-- Live Preview -->
           <div id="live-preview-box" class="bg-slate-50 p-3.5 rounded-xl border border-slate-200 text-xs space-y-1.5">
             <p class="font-bold text-slate-600 uppercase text-[10px] tracking-wider">👀 Xem trước link sẽ tạo:</p>
             <div id="live-preview-list" class="space-y-1 text-slate-500 italic">
-              Nhập danh sách kênh ở trên để thấy trước link...
+              Nhập tên kênh ở trên để xem trước link...
             </div>
           </div>
         </div>
 
-        <!-- Nút tạo -->
         <button onclick="submitGenerateLinks()" class="w-full py-4 bg-black hover:bg-slate-800 text-white font-bold rounded-xl shadow-lg shadow-black/10 transition flex items-center justify-center gap-2 text-base">
-          <span>🚀 Tạo Toàn Bộ Link Cho Nhóm Này Ngay</span>
+          <span>🚀 Tạo Danh Sách Link Đo Lường Ngay</span>
         </button>
       </div>
 
-      <!-- Kết quả vừa tạo -->
-      <div id="generation-result" class="hidden bg-emerald-50 border border-emerald-200 p-6 rounded-2xl space-y-4">
-        <div class="flex items-center justify-between">
-          <div class="flex items-center gap-2 text-emerald-800 font-bold">
-            <span>✅ Đã tạo thành công các link! Nhìn vào là biết ngay kênh và nhóm:</span>
+      <!-- ==================== KHO LINK ĐÃ TẠO (LINK REPOSITORY) ==================== -->
+      <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
+        <div class="p-5 border-b border-slate-100 flex flex-wrap items-center justify-between gap-3">
+          <div>
+            <div class="flex items-center gap-2">
+              <span class="text-lg">📦</span>
+              <h4 class="font-bold text-slate-900 text-base">Kho Link Đã Tạo</h4>
+              <span id="repo-total-badge" class="px-2 py-0.5 text-xs font-bold bg-slate-100 text-slate-800 rounded-full">0 link</span>
+            </div>
+            <p class="text-xs text-slate-500 mt-0.5">Toàn bộ kho link của chị đã tạo. Tích chọn để sao chép hoặc xóa hàng loạt qua mục ...</p>
           </div>
-          <button onclick="copyAllNewLinks()" class="text-xs font-bold bg-emerald-700 text-white px-3 py-1.5 rounded-lg hover:bg-emerald-800 transition">
-            📋 Sao chép tất cả
-          </button>
+
+          <div class="flex items-center gap-2">
+            <!-- Thanh tác vụ khi chọn nhiều ở Kho link -->
+            <div id="repo-batch-actions" class="hidden items-center gap-2 bg-rose-50 border border-rose-200 px-3 py-1.5 rounded-xl">
+              <span id="repo-selected-count" class="text-xs font-bold text-rose-700">Đã chọn 0 link</span>
+              <button onclick="executeBatchDelete('repo')" class="px-2.5 py-1 text-xs font-bold bg-rose-600 text-white rounded-lg hover:bg-rose-700 transition">
+                🗑️ Xóa đã chọn
+              </button>
+            </div>
+
+            <!-- Menu ... chung của Kho link -->
+            <div class="relative inline-block text-left">
+              <button onclick="toggleMenu('menu-repo-table')" class="p-2 rounded-xl border border-slate-200 hover:bg-slate-50 transition text-slate-700 font-black text-sm">
+                •••
+              </button>
+              <div id="menu-repo-table" class="hidden absolute right-0 mt-2 w-48 bg-white rounded-xl shadow-xl border border-slate-100 py-1 z-50 text-xs">
+                <button onclick="selectAllTable('repo', true)" class="w-full text-left px-4 py-2 hover:bg-slate-50 font-medium text-slate-700">
+                  ☑️ Chọn tất cả
+                </button>
+                <button onclick="selectAllTable('repo', false)" class="w-full text-left px-4 py-2 hover:bg-slate-50 font-medium text-slate-700">
+                  ◻️ Bỏ chọn tất cả
+                </button>
+                <div class="border-t border-slate-100 my-1"></div>
+                <button onclick="executeBatchDelete('repo')" class="w-full text-left px-4 py-2 hover:bg-rose-50 font-bold text-rose-600">
+                  🗑️ Xóa các mục đã chọn
+                </button>
+              </div>
+            </div>
+
+            <button onclick="copyAllRepoLinks()" class="px-3 py-2 text-xs font-bold bg-slate-100 text-slate-700 hover:bg-slate-200 rounded-xl transition flex items-center gap-1">
+              📋 Sao chép tất cả link
+            </button>
+          </div>
         </div>
-        <div id="created-links-container" class="space-y-2"></div>
-        <button onclick="switchMainTab('dashboard')" class="text-sm font-bold text-emerald-800 hover:underline inline-flex items-center gap-1">
-          👉 Đến trang Báo cáo & Thống kê
-        </button>
+
+        <div class="overflow-x-auto">
+          <table class="w-full text-left text-sm">
+            <thead class="bg-slate-50 text-slate-600 text-xs uppercase font-bold border-b border-slate-200">
+              <tr>
+                <th class="py-3.5 px-4 w-10 text-center">
+                  <input type="checkbox" id="repo-check-all" onchange="toggleCheckAll('repo', this.checked)" class="w-4 h-4 rounded text-black focus:ring-black">
+                </th>
+                <th class="py-3.5 px-4">Nền Tảng</th>
+                <th class="py-3.5 px-4">Nhóm</th>
+                <th class="py-3.5 px-4">Tên Kênh</th>
+                <th class="py-3.5 px-4">Link Đo Lường</th>
+                <th class="py-3.5 px-4">Link Đích</th>
+                <th class="py-3.5 px-4">Ngày Tạo</th>
+                <th class="py-3.5 px-4 text-right">Mục ...</th>
+              </tr>
+            </thead>
+            <tbody id="repo-table-body" class="divide-y divide-slate-100">
+              <tr>
+                <td colspan="8" class="text-center py-8 text-slate-400">Đang tải kho link...</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
       </div>
 
     </div>
@@ -378,8 +485,26 @@ TikTok Bio Link" class="w-full px-4 py-3 text-sm font-mono border border-slate-3
     let currentGroupFilter = 'all';
     let pieChartInstance = null;
     let lineChartInstance = null;
-    let currentChannelsData = [];
-    let recentlyCreatedLinks = [];
+    let allLinksData = [];
+    let activeOpenMenuId = null;
+
+    // Đóng dropdown khi click ra ngoài
+    window.addEventListener('click', (e) => {
+      if (!e.target.closest('button[onclick^="toggleMenu"]')) {
+        closeAllMenus();
+      }
+    });
+
+    function closeAllMenus() {
+      document.querySelectorAll('[id^="menu-"]').forEach(m => m.classList.add('hidden'));
+    }
+
+    function toggleMenu(menuId) {
+      const el = document.getElementById(menuId);
+      const isHidden = el.classList.contains('hidden');
+      closeAllMenus();
+      if (isHidden) el.classList.remove('hidden');
+    }
 
     function switchMainTab(tab) {
       const tabDash = document.getElementById('tab-dashboard');
@@ -398,6 +523,7 @@ TikTok Bio Link" class="w-full px-4 py-3 text-sm font-mono border border-slate-3
         tabGen.classList.remove('hidden');
         btnGen.className = "py-3 px-1 tab-active flex items-center gap-2";
         btnDash.className = "py-3 px-1 text-slate-500 hover:text-slate-900 flex items-center gap-2";
+        loadRepoLinks();
       }
     }
 
@@ -433,55 +559,68 @@ TikTok Bio Link" class="w-full px-4 py-3 text-sm font-mono border border-slate-3
       });
     }
 
-    function copyAllLinks() {
-      if (!currentChannelsData.length) return;
+    function copyAllRepoLinks() {
+      if (!allLinksData.length) return;
       const origin = window.location.origin;
-      const listText = currentChannelsData.map(c => `[${c.channel_group}] ${c.channel_name}: ${origin}/r/${c.slug}`).join('\n');
+      const listText = allLinksData.map(c => `[${c.platform} - ${c.channel_group}] ${c.channel_name}: ${origin}/r/${c.slug}`).join('\n');
       copyToClipboard(listText);
     }
 
-    function copyAllNewLinks() {
-      if (!recentlyCreatedLinks.length) return;
-      const listText = recentlyCreatedLinks.map(c => `[${c.channel_group}] ${c.channel_name}: ${c.tracking_url}`).join('\n');
-      copyToClipboard(listText);
+    function getPlatformBadge(platform) {
+      const p = (platform || 'TikTok').toLowerCase();
+      if (p.includes('tik')) {
+        return `<span class="px-2 py-0.5 text-[11px] font-bold bg-black text-white rounded-full flex items-center gap-1 w-max"><span>🎵</span> TikTok</span>`;
+      } else if (p.includes('face') || p.includes('fb')) {
+        return `<span class="px-2 py-0.5 text-[11px] font-bold bg-blue-600 text-white rounded-full flex items-center gap-1 w-max"><span>🔵</span> Facebook</span>`;
+      } else if (p.includes('you') || p.includes('yt')) {
+        return `<span class="px-2 py-0.5 text-[11px] font-bold bg-red-600 text-white rounded-full flex items-center gap-1 w-max"><span>🔴</span> YouTube</span>`;
+      } else if (p.includes('thread')) {
+        return `<span class="px-2 py-0.5 text-[11px] font-bold bg-slate-900 text-white rounded-full flex items-center gap-1 w-max"><span>🧵</span> Threads</span>`;
+      }
+      return `<span class="px-2 py-0.5 text-[11px] font-bold bg-slate-200 text-slate-800 rounded-full w-max">${platform}</span>`;
     }
 
-    function slugifyPreview(text, group) {
+    function slugifyPreview(text, group, platform) {
       let str = text.replace(/đ/g, 'd').replace(/Đ/g, 'd');
       str = str.normalize('NFD').replace(/[̀-ͯ]/g, '');
       str = str.toLowerCase().trim();
-      if (group === 'KOL') {
-        if (!str.startsWith('kol-') && !str.startsWith('koc-')) {
-          str = 'kol-' + str.replace('@', '');
-        }
-      } else {
-        if (!str.startsWith('tiktok') && !str.startsWith('tt-')) {
-          str = 'tiktok-' + str.replace('@', '');
-        }
-      }
-      str = str.replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
-      return str || 'link-tiktok';
+      
+      let p_pref = 'tiktok';
+      const p = (platform || '').toLowerCase();
+      if (p.includes('face') || p.includes('fb')) p_pref = 'fb';
+      else if (p.includes('you') || p.includes('yt')) p_pref = 'yt';
+      else if (p.includes('thread')) p_pref = 'threads';
+      
+      const isKol = (group === 'KOL');
+      const g_pref = isKol ? 'kol-' : '';
+      
+      let clean = str.replace(/@/g, '').replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
+      if (!clean) clean = 'kenh';
+      
+      return `${p_pref}-${g_pref}${clean}`.replace('--', '-');
     }
 
     function updateLivePreview() {
-      const text = document.getElementById('input-tiktok-channels').value;
+      const text = document.getElementById('input-channels').value;
       const groupRadio = document.querySelector('input[name="gen-group"]:checked');
       const group = groupRadio ? groupRadio.value : 'Nội bộ';
+      const platRadio = document.querySelector('input[name="gen-platform"]:checked');
+      const platform = platRadio ? platRadio.value : 'TikTok';
+
       const lines = text.split('\n').map(l => l.trim()).filter(l => l.length > 0);
       const listEl = document.getElementById('live-preview-list');
       const origin = window.location.origin;
 
       if (lines.length === 0) {
-        listEl.innerHTML = '<span class="text-slate-400 italic">Nhập danh sách kênh ở trên để thấy trước link...</span>';
+        listEl.innerHTML = '<span class="text-slate-400 italic">Nhập tên kênh ở trên để xem trước link...</span>';
         return;
       }
 
       let html = '';
       lines.slice(0, 5).forEach(line => {
-        const slug = slugifyPreview(line, group);
-        const badge = group === 'KOL' ? '<span class="px-1.5 py-0.5 bg-purple-100 text-purple-700 rounded font-bold text-[10px]">KOL</span>' : '<span class="px-1.5 py-0.5 bg-slate-100 text-slate-800 rounded font-bold text-[10px]">Nội bộ</span>';
+        const slug = slugifyPreview(line, group, platform);
         html += `<div class="flex items-center gap-2">
-          ${badge}
+          ${getPlatformBadge(platform)}
           <span class="font-bold text-slate-700">${line}</span>
           <span class="text-slate-400">→</span>
           <span class="font-mono text-rose-600 font-bold bg-white px-1.5 py-0.5 rounded border border-slate-200">${origin}/r/${slug}</span>
@@ -494,13 +633,13 @@ TikTok Bio Link" class="w-full px-4 py-3 text-sm font-mono border border-slate-3
     }
 
     function fillTemplate(type) {
-      const ta = document.getElementById('input-tiktok-channels');
+      const ta = document.getElementById('input-channels');
       if (type === 'internal') {
         document.querySelector('input[name="gen-group"][value="Nội bộ"]').checked = true;
-        ta.value = "TikTok Kênh Chính\nTikTok Kênh Phụ 1\nTikTok Bio Link\nTikTok Livestream";
+        ta.value = "Kênh Chính\nKênh Phụ 1\nBio Link";
       } else if (type === 'kol') {
         document.querySelector('input[name="gen-group"][value="KOL"]').checked = true;
-        ta.value = "KOL Mai Anh Review\nKOL Hoàng Long KOC\nKOL Linh Chi Beauty";
+        ta.value = "KOL Mai Anh Review\nKOL Hoàng Long\nKOL Linh Chi Beauty";
       }
       updateLivePreview();
     }
@@ -532,6 +671,66 @@ TikTok Bio Link" class="w-full px-4 py-3 text-sm font-mono border border-slate-3
       loadDashboardData(start, end);
     }
 
+    // ================== TÍNH NĂNG CHỌN NHIỀU & CHECKBOX ==================
+    function toggleCheckAll(prefix, isChecked) {
+      document.querySelectorAll(`.${prefix}-row-check`).forEach(cb => {
+        cb.checked = isChecked;
+      });
+      updateBatchActionUI(prefix);
+    }
+
+    function selectAllTable(prefix, isChecked) {
+      const headerCb = document.getElementById(`${prefix}-check-all`);
+      if (headerCb) headerCb.checked = isChecked;
+      toggleCheckAll(prefix, isChecked);
+      closeAllMenus();
+    }
+
+    function updateBatchActionUI(prefix) {
+      const checkedBoxes = document.querySelectorAll(`.${prefix}-row-check:checked`);
+      const count = checkedBoxes.length;
+      const bar = document.getElementById(`${prefix}-batch-actions`);
+      const label = document.getElementById(`${prefix}-selected-count`);
+
+      if (count > 0) {
+        bar.classList.remove('hidden');
+        bar.classList.add('flex');
+        label.innerText = `Đã chọn ${count} link`;
+      } else {
+        bar.classList.add('hidden');
+        bar.classList.remove('flex');
+      }
+    }
+
+    async function executeBatchDelete(prefix) {
+      closeAllMenus();
+      const checkedBoxes = document.querySelectorAll(`.${prefix}-row-check:checked`);
+      const slugs = Array.from(checkedBoxes).map(cb => cb.value);
+      if (slugs.length === 0) {
+        alert('Chị hãy chọn ít nhất 1 link để xóa nhé!');
+        return;
+      }
+
+      if (!confirm(`Chị có chắc muốn xóa vĩnh viễn ${slugs.length} link đã chọn không?`)) return;
+
+      try {
+        const res = await fetch('/api/links/batch-delete', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ slugs: slugs })
+        });
+        const json = await res.json();
+        if (json.success) {
+          showToast(`Đã xóa thành công ${slugs.length} link!`, '🗑️');
+          if (prefix === 'dash') loadDashboardData();
+          else loadRepoLinks();
+        }
+      } catch (e) {
+        alert('Có lỗi xảy ra khi xóa hàng loạt.');
+      }
+    }
+
+    // ================== LOAD DASHBOARD ==================
     async function loadDashboardData(customStart = null, customEnd = null) {
       let url = `/api/analytics?range=${currentFilter}&group=${currentGroupFilter}`;
       if (customStart || customEnd) {
@@ -541,14 +740,15 @@ TikTok Bio Link" class="w-full px-4 py-3 text-sm font-mono border border-slate-3
       try {
         const res = await fetch(url);
         const json = await res.json();
-        if (!json.success) return;
+        if (!res.ok || !json.success) {
+          document.getElementById('channels-table-body').innerHTML = `<tr><td colspan="10" class="text-center py-8 text-rose-500 font-bold">⚠️ Có lỗi xảy ra khi tải dữ liệu.</td></tr>`;
+          return;
+        }
 
         const d = json.data;
         const ov = d.overview;
         const grp = d.groups;
-        currentChannelsData = d.channels || [];
 
-        // 1. Cập nhật 2 Card Nhóm (Nội bộ vs KOL)
         const int = grp['Nội bộ'];
         const kol = grp['KOL'];
 
@@ -562,12 +762,10 @@ TikTok Bio Link" class="w-full px-4 py-3 text-sm font-mono border border-slate-3
         document.getElementById('grp-kol-links').innerText = (kol.total_links || 0) + ' kênh';
         document.getElementById('grp-kol-pct').innerText = (kol.percentage || 0) + '%';
 
-        // Đếm số kênh trên nút tab
         document.getElementById('count-all').innerText = ((int.total_links || 0) + (kol.total_links || 0));
         document.getElementById('count-internal').innerText = int.total_links || 0;
         document.getElementById('count-kol').innerText = kol.total_links || 0;
 
-        // 2. Cập nhật 4 thẻ KPI theo bộ lọc
         document.getElementById('stat-total').innerText = (ov.total_clicks || 0).toLocaleString();
         document.getElementById('stat-unique').innerText = (ov.unique_visitors || 0).toLocaleString();
         document.getElementById('stat-top').innerText = ov.top_channel || 'Chưa có';
@@ -578,10 +776,10 @@ TikTok Bio Link" class="w-full px-4 py-3 text-sm font-mono border border-slate-3
 
         renderPieChart(d.channels);
         renderTimeChart(d.timeseries);
-        renderTable(d.channels);
+        renderDashboardTable(d.channels);
       } catch (e) {
         console.error("Lỗi tải dữ liệu", e);
-        document.getElementById('channels-table-body').innerHTML = `<tr><td colspan="8" class="text-center py-8 text-rose-500 font-bold">⚠️ Không thể tải dữ liệu. Vui lòng bấm F5 tải lại trang.</td></tr>`;
+        document.getElementById('channels-table-body').innerHTML = `<tr><td colspan="10" class="text-center py-8 text-rose-500 font-bold">⚠️ Có lỗi xảy ra khi tải dữ liệu.</td></tr>`;
       }
     }
 
@@ -589,7 +787,7 @@ TikTok Bio Link" class="w-full px-4 py-3 text-sm font-mono border border-slate-3
       const ctx = document.getElementById('channelPieChart').getContext('2d');
       if (pieChartInstance) pieChartInstance.destroy();
 
-      const labels = channels.map(c => `[${c.channel_group}] ${c.channel_name}`);
+      const labels = channels.map(c => `[${c.platform || 'TikTok'}] ${c.channel_name}`);
       const data = channels.map(c => c.clicks);
       const colors = ['#0f172a', '#7e22ce', '#2563eb', '#ec4899', '#f59e0b', '#10b981', '#6366f1', '#06b6d4'];
 
@@ -664,17 +862,20 @@ TikTok Bio Link" class="w-full px-4 py-3 text-sm font-mono border border-slate-3
       });
     }
 
-    function renderTable(channels) {
+    function renderDashboardTable(channels) {
       const tbody = document.getElementById('channels-table-body');
       const origin = window.location.origin;
 
+      document.getElementById('dash-check-all').checked = false;
+      updateBatchActionUI('dash');
+
       if (!channels || channels.length === 0) {
-        tbody.innerHTML = `<tr><td colspan="8" class="text-center py-8 text-slate-400">Không có kênh nào trong nhóm này. Chị hãy bấm sang tab <b>"Tạo Link Cho Kênh"</b> để tạo nhé!</td></tr>`;
+        tbody.innerHTML = `<tr><td colspan="10" class="text-center py-8 text-slate-400">Chưa có kênh nào trong nhóm này. Chị hãy bấm sang tab <b>"Tạo Link & Kho Link"</b> để tạo nhé!</td></tr>`;
         return;
       }
 
       let html = '';
-      channels.forEach(ch => {
+      channels.forEach((ch, idx) => {
         const trackUrl = `${origin}/r/${ch.slug}`;
         const isKol = (ch.channel_group === 'KOL');
         const grpBadge = isKol 
@@ -683,6 +884,10 @@ TikTok Bio Link" class="w-full px-4 py-3 text-sm font-mono border border-slate-3
 
         html += `
           <tr class="hover:bg-slate-50/80 transition">
+            <td class="py-4 px-4 text-center">
+              <input type="checkbox" value="${ch.slug}" onchange="updateBatchActionUI('dash')" class="dash-row-check w-4 h-4 rounded text-black focus:ring-black">
+            </td>
+            <td class="py-4 px-4">${getPlatformBadge(ch.platform)}</td>
             <td class="py-4 px-4">${grpBadge}</td>
             <td class="py-4 px-4 font-bold text-slate-900">${ch.channel_name}</td>
             <td class="py-4 px-4">
@@ -701,9 +906,21 @@ TikTok Bio Link" class="w-full px-4 py-3 text-sm font-mono border border-slate-3
               </span>
             </td>
             <td class="py-4 px-4 text-xs text-slate-500">${ch.last_click || 'Chưa click'}</td>
-            <td class="py-4 px-4 text-right space-x-2">
-              <a href="${trackUrl}" target="_blank" class="text-xs text-blue-600 font-semibold hover:underline">Thử click</a>
-              <button onclick="deleteLink('${ch.slug}')" class="text-xs text-rose-500 hover:underline">Xóa</button>
+            <td class="py-4 px-4 text-right">
+              <!-- Mục ba chấm cho từng dòng -->
+              <div class="relative inline-block text-left">
+                <button onclick="toggleMenu('menu-dash-row-${idx}')" class="p-1.5 rounded-lg hover:bg-slate-200 transition text-slate-600 font-black text-sm">
+                  •••
+                </button>
+                <div id="menu-dash-row-${idx}" class="hidden absolute right-0 mt-1 w-36 bg-white rounded-xl shadow-xl border border-slate-100 py-1 z-50 text-xs">
+                  <button onclick="copyToClipboard('${trackUrl}'); closeAllMenus();" class="w-full text-left px-3 py-1.5 hover:bg-slate-50 font-medium text-slate-700 flex items-center gap-1.5">
+                    📋 Sao chép
+                  </button>
+                  <button onclick="deleteOneLink('${ch.slug}', 'dash')" class="w-full text-left px-3 py-1.5 hover:bg-rose-50 font-bold text-rose-600 flex items-center gap-1.5">
+                    🗑️ Xóa link
+                  </button>
+                </div>
+              </div>
             </td>
           </tr>
         `;
@@ -711,6 +928,81 @@ TikTok Bio Link" class="w-full px-4 py-3 text-sm font-mono border border-slate-3
       tbody.innerHTML = html;
     }
 
+    // ================== LOAD KHO LINK TRONG TAB TẠO LINK ==================
+    async function loadRepoLinks() {
+      try {
+        const res = await fetch('/api/links');
+        const json = await res.json();
+        if (!json.success) return;
+
+        allLinksData = json.links || [];
+        document.getElementById('repo-total-badge').innerText = `${allLinksData.length} link`;
+
+        const tbody = document.getElementById('repo-table-body');
+        const origin = window.location.origin;
+
+        document.getElementById('repo-check-all').checked = false;
+        updateBatchActionUI('repo');
+
+        if (allLinksData.length === 0) {
+          tbody.innerHTML = `<tr><td colspan="8" class="text-center py-8 text-slate-400">Kho link đang trống. Chị hãy tạo link ở form phía trên nhé!</td></tr>`;
+          return;
+        }
+
+        let html = '';
+        allLinksData.forEach((link, idx) => {
+          const trackUrl = `${origin}/r/${link.slug}`;
+          const isKol = (link.channel_group === 'KOL');
+          const grpBadge = isKol 
+            ? `<span class="px-2 py-0.5 text-[11px] font-bold bg-purple-100 text-purple-700 rounded-full border border-purple-200">🌟 KOL</span>`
+            : `<span class="px-2 py-0.5 text-[11px] font-bold bg-slate-100 text-slate-800 rounded-full border border-slate-200">🏢 Nội bộ</span>`;
+
+          html += `
+            <tr class="hover:bg-slate-50/80 transition">
+              <td class="py-3.5 px-4 text-center">
+                <input type="checkbox" value="${link.slug}" onchange="updateBatchActionUI('repo')" class="repo-row-check w-4 h-4 rounded text-black focus:ring-black">
+              </td>
+              <td class="py-3.5 px-4">${getPlatformBadge(link.platform)}</td>
+              <td class="py-3.5 px-4">${grpBadge}</td>
+              <td class="py-3.5 px-4 font-bold text-slate-900">${link.channel_name}</td>
+              <td class="py-3.5 px-4">
+                <div class="flex items-center gap-2">
+                  <span class="font-mono text-xs font-bold text-slate-800 bg-slate-100 px-2 py-1 rounded border border-slate-200 select-all">${trackUrl}</span>
+                  <button onclick="copyToClipboard('${trackUrl}')" title="Sao chép link" class="p-1 text-slate-400 hover:text-black transition">
+                    📋
+                  </button>
+                </div>
+              </td>
+              <td class="py-3.5 px-4 text-xs text-slate-500 truncate max-w-[160px]" title="${link.destination_url}">
+                ${link.destination_url}
+              </td>
+              <td class="py-3.5 px-4 text-xs text-slate-400 whitespace-nowrap">${link.created_at || ''}</td>
+              <td class="py-3.5 px-4 text-right">
+                <!-- Mục ba chấm cho từng dòng trong Kho link -->
+                <div class="relative inline-block text-left">
+                  <button onclick="toggleMenu('menu-repo-row-${idx}')" class="p-1.5 rounded-lg hover:bg-slate-200 transition text-slate-600 font-black text-sm">
+                    •••
+                  </button>
+                  <div id="menu-repo-row-${idx}" class="hidden absolute right-0 mt-1 w-36 bg-white rounded-xl shadow-xl border border-slate-100 py-1 z-50 text-xs">
+                    <button onclick="copyToClipboard('${trackUrl}'); closeAllMenus();" class="w-full text-left px-3 py-1.5 hover:bg-slate-50 font-medium text-slate-700 flex items-center gap-1.5">
+                      📋 Sao chép
+                    </button>
+                    <button onclick="deleteOneLink('${link.slug}', 'repo')" class="w-full text-left px-3 py-1.5 hover:bg-rose-50 font-bold text-rose-600 flex items-center gap-1.5">
+                      🗑️ Xóa link
+                    </button>
+                  </div>
+                </div>
+              </td>
+            </tr>
+          `;
+        });
+        tbody.innerHTML = html;
+      } catch (e) {
+        console.error("Lỗi tải kho link", e);
+      }
+    }
+
+    // ================== TẠO LINK MỚI ==================
     async function submitGenerateLinks() {
       const dest = document.getElementById('input-destination').value.trim();
       if (!dest) {
@@ -718,12 +1010,15 @@ TikTok Bio Link" class="w-full px-4 py-3 text-sm font-mono border border-slate-3
         return;
       }
 
+      const platRadio = document.querySelector('input[name="gen-platform"]:checked');
+      const platform = platRadio ? platRadio.value : 'TikTok';
+
       const groupRadio = document.querySelector('input[name="gen-group"]:checked');
       const group = groupRadio ? groupRadio.value : 'Nội bộ';
 
-      const text = document.getElementById('input-tiktok-channels').value.trim();
+      const text = document.getElementById('input-channels').value.trim();
       if (!text) {
-        alert('Chị hãy nhập danh sách kênh nhé!');
+        alert('Chị hãy nhập danh sách tên kênh nhé!');
         return;
       }
 
@@ -737,57 +1032,32 @@ TikTok Bio Link" class="w-full px-4 py-3 text-sm font-mono border border-slate-3
         const res = await fetch('/api/links', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ destination_url: dest, channels: lines, channel_group: group })
+          body: JSON.stringify({ destination_url: dest, channels: lines, channel_group: group, platform: platform })
         });
         const json = await res.json();
         if (json.success) {
-          recentlyCreatedLinks = json.created;
-          const container = document.getElementById('created-links-container');
-          container.innerHTML = '';
-          json.created.forEach(item => {
-            const isKol = item.channel_group === 'KOL';
-            container.innerHTML += `
-              <div class="flex items-center justify-between bg-white p-3 rounded-xl border ${isKol ? 'border-purple-200' : 'border-slate-200'}">
-                <div class="flex items-center gap-2">
-                  <span class="text-xs px-2 py-0.5 rounded font-bold ${isKol ? 'bg-purple-100 text-purple-700' : 'bg-slate-100 text-slate-800'}">${item.channel_group}</span>
-                  <span class="font-bold text-sm text-slate-900">${item.channel_name}:</span>
-                  <span class="text-xs font-mono font-bold ${isKol ? 'text-purple-600 bg-purple-50' : 'text-slate-700 bg-slate-100'} px-2 py-0.5 rounded">${item.tracking_url}</span>
-                </div>
-                <button onclick="copyToClipboard('${item.tracking_url}')" class="px-3 py-1 bg-black hover:bg-slate-800 text-white text-xs font-bold rounded-lg transition">
-                  Sao chép
-                </button>
-              </div>
-            `;
-          });
-          document.getElementById('generation-result').classList.remove('hidden');
-          showToast('Đã tạo thành công ' + json.created.length + ' link cho nhóm ' + group + '!', '🎉');
+          showToast(`Đã tạo thành công ${json.created.length} link cho nền tảng ${platform}!`, '🎉');
+          document.getElementById('input-channels').value = '';
+          updateLivePreview();
+          loadRepoLinks(); // Cập nhật ngay vào Kho link bên dưới!
         }
       } catch (e) {
         alert('Có lỗi xảy ra, vui lòng thử lại.');
       }
     }
 
-    async function deleteLink(slug) {
-      if (!confirm('Chị có chắc muốn xóa link này không? (Lịch sử click của link này cũng sẽ bị xóa)')) return;
-      await fetch('/api/links/' + slug, { method: 'DELETE' });
-      showToast('Đã xóa link', '🗑️');
-      loadDashboardData();
-    }
+    async function deleteOneLink(slug, source) {
+      closeAllMenus();
+      if (!confirm(`Chị có chắc muốn xóa link "${slug}" không?`)) return;
 
-    async function seedDemoData() {
-      if (!confirm('Hệ thống sẽ nạp lượt click mẫu cho CẢ 2 NHÓM (Nội Bộ & KOL) trong 14 ngày qua để chị xem trước biểu đồ. Toàn bộ link của chị vẫn được giữ nguyên. Tiếp tục nhé?')) return;
-      const res = await fetch('/api/seed-demo', { method: 'POST' });
-      const json = await res.json();
-      showToast(json.message || 'Đã nạp click mẫu!', '✨');
-      loadDashboardData();
-    }
-
-    async function clearClicks() {
-      if (!confirm('Chị có chắc muốn reset toàn bộ số lượt click về 0? (Danh sách link vẫn được giữ nguyên để bắt đầu đo traffic thật).')) return;
-      const res = await fetch('/api/clear-clicks', { method: 'POST' });
-      const json = await res.json();
-      showToast(json.message || 'Đã reset click về 0!', '🔄');
-      loadDashboardData();
+      try {
+        await fetch('/api/links/' + slug, { method: 'DELETE' });
+        showToast('Đã xóa link thành công', '🗑️');
+        if (source === 'dash') loadDashboardData();
+        else loadRepoLinks();
+      } catch (e) {
+        alert('Có lỗi khi xóa link.');
+      }
     }
 
     window.addEventListener('DOMContentLoaded', () => {

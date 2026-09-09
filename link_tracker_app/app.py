@@ -27,7 +27,7 @@ def track_and_redirect(slug):
     ip = request.headers.get('X-Forwarded-For', request.remote_addr or '')
     if ',' in ip:
         ip = ip.split(',')[0].strip()
-    referrer = request.referrer or 'TikTok'
+    referrer = request.referrer or 'Trực tiếp'
     
     destination = db.record_click(slug, device_type=device, ip_address=ip, user_agent=ua, referrer=referrer)
     if destination:
@@ -54,6 +54,7 @@ def create_links():
     dest_url = data.get('destination_url', '').strip()
     channels = data.get('channels', [])
     channel_group = data.get('channel_group', 'Nội bộ')
+    platform = data.get('platform', 'TikTok')
     
     if not dest_url:
         return jsonify({'success': False, 'message': 'Vui lòng nhập link website đích!'}), 400
@@ -69,13 +70,15 @@ def create_links():
             name = item.get('name', '').strip()
             custom_slug = item.get('slug', '').strip()
             grp = item.get('group', channel_group)
+            plat = item.get('platform', platform)
         else:
             name = str(item).strip()
             custom_slug = None
             grp = channel_group
+            plat = platform
             
         if name:
-            new_link = db.create_link(name, dest_url, custom_slug=custom_slug, channel_group=grp)
+            new_link = db.create_link(name, dest_url, custom_slug=custom_slug, channel_group=grp, platform=plat)
             new_link['tracking_url'] = f"{base_url}/r/{new_link['slug']}"
             created.append(new_link)
         
@@ -85,6 +88,16 @@ def create_links():
 def delete_link(slug):
     db.delete_link(slug)
     return jsonify({'success': True, 'message': f'Đã xóa link {slug}'})
+
+@app.route('/api/links/batch-delete', methods=['POST'])
+def batch_delete_links():
+    data = request.get_json() or {}
+    slugs = data.get('slugs', [])
+    if not slugs:
+        return jsonify({'success': False, 'message': 'Chưa chọn link nào để xóa!'}), 400
+        
+    count = db.delete_links_batch(slugs)
+    return jsonify({'success': True, 'message': f'Đã xóa thành công {count} link!'})
 
 @app.route('/api/analytics', methods=['GET'])
 def get_analytics():
@@ -126,28 +139,12 @@ def get_analytics():
         traceback.print_exc()
         return jsonify({'success': False, 'message': str(e)}), 500
 
-@app.route('/api/seed-demo', methods=['POST'])
-def seed_demo():
-    try:
-        count = db.seed_demo_data()
-        return jsonify({'success': True, 'message': f'Đã nạp click mẫu cho {count} kênh thành công!'})
-    except Exception as e:
-        return jsonify({'success': False, 'message': str(e)}), 500
-
-@app.route('/api/clear-clicks', methods=['POST'])
-def clear_clicks():
-    try:
-        db.clear_all_clicks()
-        return jsonify({'success': True, 'message': 'Đã reset toàn bộ lượt click về 0!'})
-    except Exception as e:
-        return jsonify({'success': False, 'message': str(e)}), 500
-
 @app.route('/api/export-csv', methods=['GET'])
 def export_csv():
     with db.get_db() as conn:
         c = conn.cursor()
         query = '''
-            SELECT c.clicked_at, l.channel_group, l.channel_name, l.slug, l.destination_url, c.device_type, c.referrer
+            SELECT c.clicked_at, l.platform, l.channel_group, l.channel_name, l.slug, l.destination_url, c.device_type, c.referrer
             FROM clicks c
             JOIN links l ON c.link_id = l.id
             ORDER BY c.clicked_at DESC
@@ -157,15 +154,15 @@ def export_csv():
         
     si = io.StringIO()
     cw = csv.writer(si)
-    cw.writerow(['ThoiGian', 'NhomKenh', 'KenhTikTok', 'MaLinkSlug', 'LinkDich', 'ThietBi', 'Nguon'])
+    cw.writerow(['ThoiGian', 'NenTang', 'NhomKenh', 'TenKenh', 'MaLinkSlug', 'LinkDich', 'ThietBi', 'Nguon'])
     for r in rows:
-        cw.writerow([r['clicked_at'], r['channel_group'], r['channel_name'], r['slug'], r['destination_url'], r['device_type'], r['referrer']])
+        cw.writerow([r['clicked_at'], r['platform'], r['channel_group'], r['channel_name'], r['slug'], r['destination_url'], r['device_type'], r['referrer']])
         
     output = si.getvalue()
     return Response(
         output,
         mimetype="text/csv",
-        headers={"Content-disposition": "attachment; filename=bao-cao-traffic-tiktok.csv"}
+        headers={"Content-disposition": "attachment; filename=bao-cao-traffic.csv"}
     )
 
 if __name__ == '__main__':

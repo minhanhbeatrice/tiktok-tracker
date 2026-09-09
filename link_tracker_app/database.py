@@ -3,7 +3,6 @@ import os
 import re
 import unicodedata
 import hashlib
-import random
 from datetime import datetime, timedelta
 
 DB_PATH = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'tracker.db')
@@ -22,6 +21,7 @@ def init_db():
                 slug TEXT UNIQUE NOT NULL,
                 channel_name TEXT NOT NULL,
                 channel_group TEXT DEFAULT 'Nội bộ',
+                platform TEXT DEFAULT 'TikTok',
                 destination_url TEXT NOT NULL,
                 created_at TEXT NOT NULL
             )
@@ -43,39 +43,60 @@ def init_db():
         c.execute('CREATE INDEX IF NOT EXISTS idx_links_slug ON links (slug)')
         c.execute('CREATE INDEX IF NOT EXISTS idx_links_group ON links (channel_group)')
         
+        # Tự động cập nhật cột nếu dùng DB cũ
         c.execute("PRAGMA table_info(links)")
         cols = [r['name'] for r in c.fetchall()]
         if 'channel_group' not in cols:
             c.execute("ALTER TABLE links ADD COLUMN channel_group TEXT DEFAULT 'Nội bộ'")
+        if 'platform' not in cols:
+            c.execute("ALTER TABLE links ADD COLUMN platform TEXT DEFAULT 'TikTok'")
             
         conn.commit()
 
-def slugify(text, group='Nội bộ'):
+def slugify(text, group='Nội bộ', platform='TikTok'):
     text = text.replace('đ', 'd').replace('Đ', 'd')
     text = unicodedata.normalize('NFKD', text)
     text = ''.join(c for c in text if not unicodedata.combining(c))
     text = text.lower().strip()
     
-    if group == 'KOL':
-        if not text.startswith('kol-') and not text.startswith('koc-'):
-            text = 'kol-' + text.replace('@', '')
+    # Chuẩn hóa tiền tố nền tảng
+    p = platform.lower().strip()
+    if 'tik' in p:
+        p_prefix = 'tiktok'
+    elif 'face' in p or 'fb' in p:
+        p_prefix = 'fb'
+    elif 'you' in p or 'yt' in p:
+        p_prefix = 'yt'
+    elif 'thread' in p:
+        p_prefix = 'threads'
     else:
-        if not text.startswith('tiktok') and not text.startswith('tt-'):
-            text = 'tiktok-' + text.replace('@', '')
-            
-    text = re.sub(r'[^a-z0-9]+', '-', text).strip('-')
-    return text if text else 'link-tiktok'
+        p_prefix = re.sub(r'[^a-z0-9]+', '', p) or 'link'
+        
+    # Chuẩn hóa tiền tố nhóm
+    is_kol = (group.upper() in ['KOL', 'KOC'])
+    g_prefix = 'kol-' if is_kol else ''
+    
+    # Loại bỏ @ hoặc các ký tự lạ ở tên kênh
+    clean_name = re.sub(r'[^a-z0-9]+', '-', text.replace('@', '')).strip('-')
+    if not clean_name:
+        clean_name = 'kenh'
+        
+    # Tạo slug hoàn chỉnh: [nền-tảng]-[nhóm]-[tên-kênh]
+    # Ví dụ: tiktok-kenh-chinh, tiktok-kol-mai-anh, fb-fanpage, fb-kol-hoang-long
+    slug = f"{p_prefix}-{g_prefix}{clean_name}".replace('--', '-')
+    return slug
 
-def create_link(channel_name, destination_url, custom_slug=None, channel_group='Nội bộ'):
+def create_link(channel_name, destination_url, custom_slug=None, channel_group='Nội bộ', platform='TikTok'):
     if not destination_url.startswith(('http://', 'https://')):
         destination_url = 'https://' + destination_url
         
     group = 'KOL' if str(channel_group).strip().upper() in ['KOL', 'KOC'] else 'Nội bộ'
+    plat = platform.strip() if platform and platform.strip() else 'TikTok'
     
     if custom_slug and custom_slug.strip():
         base_slug = re.sub(r'[^a-z0-9\-]+', '-', custom_slug.lower().strip()).strip('-')
     else:
-        base_slug = slugify(channel_name, group)
+        base_slug = slugify(channel_name, group=group, platform=plat)
         
     slug = base_slug
     now = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
@@ -86,8 +107,8 @@ def create_link(channel_name, destination_url, custom_slug=None, channel_group='
         while True:
             try:
                 c.execute(
-                    'INSERT INTO links (slug, channel_name, channel_group, destination_url, created_at) VALUES (?, ?, ?, ?, ?)',
-                    (slug, channel_name, group, destination_url, now)
+                    'INSERT INTO links (slug, channel_name, channel_group, platform, destination_url, created_at) VALUES (?, ?, ?, ?, ?, ?)',
+                    (slug, channel_name, group, plat, destination_url, now)
                 )
                 conn.commit()
                 return {
@@ -95,6 +116,7 @@ def create_link(channel_name, destination_url, custom_slug=None, channel_group='
                     'slug': slug,
                     'channel_name': channel_name,
                     'channel_group': group,
+                    'platform': plat,
                     'destination_url': destination_url,
                     'created_at': now
                 }
@@ -106,7 +128,7 @@ def get_all_links():
     with get_db() as conn:
         c = conn.cursor()
         c.execute('''
-            SELECT l.id, l.slug, l.channel_name, l.channel_group, l.destination_url, l.created_at,
+            SELECT l.id, l.slug, l.channel_name, l.channel_group, l.platform, l.destination_url, l.created_at,
                    COUNT(c.id) as total_clicks,
                    COUNT(DISTINCT c.ip_hash) as unique_clicks,
                    MAX(c.clicked_at) as last_clicked
@@ -168,7 +190,7 @@ def get_analytics(start_date=None, end_date=None, group_filter=None):
     with get_db() as conn:
         c = conn.cursor()
         
-        # 1. Thống kê theo từng nhóm (Nội bộ vs KOL)
+        # 1. Thống kê theo từng nhóm
         c.execute("SELECT channel_group, COUNT(*) as count FROM links GROUP BY channel_group")
         link_counts = {r['channel_group']: r['count'] for r in c.fetchall()}
         
@@ -192,7 +214,7 @@ def get_analytics(start_date=None, end_date=None, group_filter=None):
                 groups_stat[grp_name]['clicks'] = g['clicks']
                 groups_stat[grp_name]['unique_visitors'] = g['unique_visitors']
                 
-        # Thêm điều kiện lọc nhóm nếu người dùng chọn tab cụ thể
+        # Lọc nhóm nếu người dùng chọn tab
         channel_where = where_sql
         channel_params = list(params)
         if group_filter and group_filter in ['Nội bộ', 'KOL']:
@@ -210,7 +232,6 @@ def get_analytics(start_date=None, end_date=None, group_filter=None):
         ov = c.fetchone()
         overview = dict(ov) if ov else {'total_clicks': 0, 'unique_visitors': 0}
         
-        # Tính % giữa 2 nhóm
         overall_total = (groups_stat['Nội bộ']['clicks'] + groups_stat['KOL']['clicks'])
         if overall_total > 0:
             groups_stat['Nội bộ']['percentage'] = round(groups_stat['Nội bộ']['clicks'] / overall_total * 100, 1)
@@ -232,9 +253,9 @@ def get_analytics(start_date=None, end_date=None, group_filter=None):
         td = c.fetchone()
         overview['today_clicks'] = td['today_clicks'] if td else 0
         
-        # 3. Danh sách chi tiết các kênh (ĐÃ FIX TOÀN DIỆN BINDING THAM SỐ)
+        # 3. Danh sách chi tiết các kênh
         channel_query = f'''
-            SELECT l.id, l.slug, l.channel_name, l.channel_group, l.destination_url,
+            SELECT l.id, l.slug, l.channel_name, l.channel_group, l.platform, l.destination_url,
                    COUNT(c.id) as clicks,
                    COUNT(DISTINCT c.ip_hash) as unique_clicks,
                    MAX(c.clicked_at) as last_click
@@ -247,7 +268,6 @@ def get_analytics(start_date=None, end_date=None, group_filter=None):
             table_params.append(group_filter)
             
         channel_query += ' GROUP BY l.id ORDER BY clicks DESC, l.created_at DESC'
-        
         c.execute(channel_query, table_params)
         channel_rows = [dict(r) for r in c.fetchall()]
         
@@ -286,56 +306,18 @@ def delete_link(slug):
         c.execute('DELETE FROM links WHERE slug = ?', (slug,))
         conn.commit()
 
+def delete_links_batch(slug_list):
+    if not slug_list:
+        return 0
+    with get_db() as conn:
+        c = conn.cursor()
+        placeholders = ','.join(['?'] * len(slug_list))
+        c.execute(f'DELETE FROM links WHERE slug IN ({placeholders})', slug_list)
+        conn.commit()
+        return c.rowcount
+
 def clear_all_clicks():
     with get_db() as conn:
         c = conn.cursor()
         c.execute('DELETE FROM clicks')
         conn.commit()
-
-def seed_demo_data():
-    init_db()
-    existing_links = get_all_links()
-    
-    if existing_links:
-        target_links = existing_links
-    else:
-        sample_channels = [
-            ('TikTok Kênh Chính', 'https://my-shop.vn', 'Nội bộ'),
-            ('TikTok Kênh Phụ 1', 'https://my-shop.vn', 'Nội bộ'),
-            ('TikTok Bio Link', 'https://my-shop.vn', 'Nội bộ'),
-            ('TikTok Livestream', 'https://my-shop.vn', 'Nội bộ'),
-            ('KOL Mai Anh Review', 'https://my-shop.vn', 'KOL'),
-            ('KOL Hoàng Long KOC', 'https://my-shop.vn', 'KOL'),
-            ('KOL Linh Chi Beauty', 'https://my-shop.vn', 'KOL')
-        ]
-        target_links = []
-        for name, url, grp in sample_channels:
-            link = create_link(name, url, channel_group=grp)
-            target_links.append(link)
-            
-    clear_all_clicks()
-    
-    devices = ['Điện thoại', 'Điện thoại', 'Điện thoại', 'Máy tính']
-    now = datetime.now()
-    
-    # Tạo đủ lượt click để phân bổ đều cho tất cả kênh (kể cả khi có > 50-100 kênh)
-    total_clicks_to_gen = max(350, len(target_links) * 15)
-    click_records = []
-    for _ in range(total_clicks_to_gen):
-        link = random.choice(target_links)
-        days_ago = random.randint(0, 13)
-        hours_ago = random.randint(0, 23)
-        minutes_ago = random.randint(0, 59)
-        clicked_time = (now - timedelta(days=days_ago, hours=hours_ago, minutes=minutes_ago)).strftime('%Y-%m-%d %H:%M:%S')
-        device = random.choice(devices)
-        ip_hash = f"user_{random.randint(1, 150)}"
-        click_records.append((link['id'], clicked_time, device, ip_hash, 'Mozilla/5.0 (iPhone; CPU OS)', 'https://www.tiktok.com/'))
-        
-    with get_db() as conn:
-        c = conn.cursor()
-        c.executemany('''
-            INSERT INTO clicks (link_id, clicked_at, device_type, ip_hash, user_agent, referrer)
-            VALUES (?, ?, ?, ?, ?, ?)
-        ''', click_records)
-        conn.commit()
-    return len(target_links)
