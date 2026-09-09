@@ -1,6 +1,6 @@
 services:
   - type: web
-    name: tiktok-tracker
+    name: akaiwatraffictracker
     runtime: python
     buildCommand: pip install -r requirements.txt
     startCommand: gunicorn app:app
