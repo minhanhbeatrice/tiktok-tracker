@@ -265,20 +265,19 @@
                 <th class="py-3.5 px-4 w-10 text-center">
                   <input type="checkbox" id="dash-check-all" onchange="toggleCheckAll('dash', this.checked)" class="w-4 h-4 rounded text-black focus:ring-black">
                 </th>
-                <th class="py-3.5 px-4">Nền Tảng</th>
-                <th class="py-3.5 px-4">Nhóm</th>
-                <th class="py-3.5 px-4">Tên Kênh</th>
-                <th class="py-3.5 px-4">Link Đo Lường (Nhìn rõ kênh)</th>
-                <th class="py-3.5 px-4 text-center">Tổng Click</th>
-                <th class="py-3.5 px-4 text-center">Khách Unique</th>
-                <th class="py-3.5 px-4 text-center">Tỉ Lệ %</th>
-                <th class="py-3.5 px-4">Lần Click Cuối</th>
-                <th class="py-3.5 px-4 text-right">Thao tác</th>
+                <th class="py-3.5 px-4 whitespace-nowrap">Nền Tảng</th>
+                <th class="py-3.5 px-4 whitespace-nowrap min-w-[120px]">Nhóm</th>
+                <th class="py-3.5 px-4 min-w-[150px]">Tên Kênh</th>
+                <th class="py-3.5 px-4 max-w-[210px]">Link Đo Lường</th>
+                <th class="py-3.5 px-4 text-center whitespace-nowrap">Tổng Click</th>
+                <th class="py-3.5 px-4 text-center whitespace-nowrap">Khách Unique</th>
+                <th class="py-3.5 px-4 text-center whitespace-nowrap">Tỉ Lệ %</th>
+                <th class="py-3.5 px-4 whitespace-nowrap min-w-[140px]">Lần Click Cuối</th>
               </tr>
             </thead>
             <tbody id="channels-table-body" class="divide-y divide-slate-100">
               <tr>
-                <td colspan="10" class="text-center py-8 text-slate-400">Đang tải dữ liệu...</td>
+                <td colspan="9" class="text-center py-8 text-slate-400">Đang tải dữ liệu...</td>
               </tr>
             </tbody>
           </table>
@@ -452,18 +451,17 @@ Reviewer Mai Anh" class="w-full px-4 py-3 text-sm font-mono border border-slate-
                 <th class="py-3.5 px-4 w-10 text-center">
                   <input type="checkbox" id="repo-check-all" onchange="toggleCheckAll('repo', this.checked)" class="w-4 h-4 rounded text-black focus:ring-black">
                 </th>
-                <th class="py-3.5 px-4">Nền Tảng</th>
-                <th class="py-3.5 px-4">Nhóm</th>
-                <th class="py-3.5 px-4">Tên Kênh</th>
-                <th class="py-3.5 px-4">Link Đo Lường</th>
-                <th class="py-3.5 px-4">Link Đích</th>
-                <th class="py-3.5 px-4">Ngày Tạo</th>
-                <th class="py-3.5 px-4 text-right">Mục ...</th>
+                <th class="py-3.5 px-4 whitespace-nowrap">Nền Tảng</th>
+                <th class="py-3.5 px-4 whitespace-nowrap min-w-[120px]">Nhóm</th>
+                <th class="py-3.5 px-4 min-w-[150px]">Tên Kênh</th>
+                <th class="py-3.5 px-4 max-w-[210px]">Link Đo Lường</th>
+                <th class="py-3.5 px-4 max-w-[180px]">Link Đích</th>
+                <th class="py-3.5 px-4 whitespace-nowrap">Ngày Tạo</th>
               </tr>
             </thead>
             <tbody id="repo-table-body" class="divide-y divide-slate-100">
               <tr>
-                <td colspan="8" class="text-center py-8 text-slate-400">Đang tải kho link...</td>
+                <td colspan="7" class="text-center py-8 text-slate-400">Đang tải kho link...</td>
               </tr>
             </tbody>
           </table>
@@ -885,7 +883,7 @@ Reviewer Mai Anh" class="w-full px-4 py-3 text-sm font-mono border border-slate-
       if (dashChkAll) dashChkAll.checked = false;
 
       if (!channels || channels.length === 0) {
-        tbody.innerHTML = `<tr><td colspan="10" class="text-center py-8 text-slate-400">Chưa có kênh nào trong nhóm này. Chị hãy bấm sang tab <b>"Tạo Link & Kho Link"</b> để tạo nhé!</td></tr>`;
+        tbody.innerHTML = `<tr><td colspan="9" class="text-center py-8 text-slate-400">Chưa có kênh nào trong nhóm này. Chị hãy bấm sang tab <b>"Tạo Link & Kho Link"</b> để tạo nhé!</td></tr>`;
         updateBatchActionUI('dash');
         return;
       }
@@ -895,21 +893,34 @@ Reviewer Mai Anh" class="w-full px-4 py-3 text-sm font-mono border border-slate-
         const trackUrl = `${origin}/r/${ch.slug}`;
         const isKol = (ch.channel_group === 'KOL');
         const grpBadge = isKol 
-          ? `<span class="px-2 py-0.5 text-[11px] font-bold bg-purple-100 text-purple-700 rounded-full border border-purple-200">🌟 KOL</span>`
-          : `<span class="px-2 py-0.5 text-[11px] font-bold bg-slate-100 text-slate-800 rounded-full border border-slate-200">🏢 Nội bộ</span>`;
+          ? `<span class="inline-flex items-center gap-1 px-2.5 py-1 text-xs font-bold bg-purple-100 text-purple-700 rounded-full border border-purple-200 whitespace-nowrap">🌟 KOL</span>`
+          : `<span class="inline-flex items-center gap-1 px-2.5 py-1 text-xs font-bold bg-slate-100 text-slate-800 rounded-full border border-slate-200 whitespace-nowrap">🏢 Nội bộ</span>`;
+
+        let lastClickHtml = '<span class="text-slate-400 italic text-xs">Chưa click</span>';
+        if (ch.last_click) {
+          const parts = ch.last_click.trim().split(' ');
+          const datePart = parts[0] || '';
+          const timePart = parts[1] || '';
+          lastClickHtml = `
+            <div class="leading-tight">
+              <div class="font-semibold text-slate-800 text-xs">${datePart}</div>
+              <div class="text-[11px] text-slate-400 font-mono mt-0.5">${timePart}</div>
+            </div>
+          `;
+        }
 
         html += `
           <tr class="hover:bg-slate-50/80 transition">
             <td class="py-4 px-4 text-center">
               <input type="checkbox" value="${ch.slug}" onchange="updateBatchActionUI('dash')" class="dash-row-check w-4 h-4 rounded text-black focus:ring-black">
             </td>
-            <td class="py-4 px-4">${getPlatformBadge(ch.platform)}</td>
-            <td class="py-4 px-4">${grpBadge}</td>
-            <td class="py-4 px-4 font-bold text-slate-900">${ch.channel_name}</td>
-            <td class="py-4 px-4">
-              <div class="flex items-center gap-2">
-                <span class="font-mono text-xs ${isKol ? 'text-purple-700 bg-purple-50 border-purple-200' : 'text-slate-800 bg-slate-100 border-slate-200'} font-bold px-2.5 py-1 rounded border select-all">${trackUrl}</span>
-                <button onclick="copyToClipboard('${trackUrl}')" title="Sao chép link" class="p-1 text-slate-400 hover:text-black transition">
+            <td class="py-4 px-4 whitespace-nowrap">${getPlatformBadge(ch.platform)}</td>
+            <td class="py-4 px-4 whitespace-nowrap min-w-[120px]">${grpBadge}</td>
+            <td class="py-4 px-4 font-bold text-slate-900 text-sm min-w-[150px]">${ch.channel_name}</td>
+            <td class="py-4 px-4 max-w-[210px]">
+              <div class="flex items-center gap-1.5">
+                <span class="font-mono text-xs ${isKol ? 'text-purple-700 bg-purple-50 border-purple-200' : 'text-slate-800 bg-slate-100 border-slate-200'} font-bold px-2 py-0.5 rounded border truncate max-w-[160px] select-all" title="${trackUrl}">${trackUrl}</span>
+                <button onclick="copyToClipboard('${trackUrl}')" title="Sao chép link" class="p-1 text-slate-400 hover:text-black transition flex-shrink-0">
                   📋
                 </button>
               </div>
@@ -921,23 +932,7 @@ Reviewer Mai Anh" class="w-full px-4 py-3 text-sm font-mono border border-slate-
                 ${ch.percentage || 0}%
               </span>
             </td>
-            <td class="py-4 px-4 text-xs text-slate-500">${ch.last_click || 'Chưa click'}</td>
-            <td class="py-4 px-4 text-right">
-              <!-- Mục ba chấm cho từng dòng -->
-              <div class="relative inline-block text-left">
-                <button onclick="toggleMenu('menu-dash-row-${idx}')" class="p-1.5 rounded-lg hover:bg-slate-200 transition text-slate-600 font-black text-sm">
-                  •••
-                </button>
-                <div id="menu-dash-row-${idx}" class="hidden absolute right-0 mt-1 w-36 bg-white rounded-xl shadow-xl border border-slate-100 py-1 z-50 text-xs">
-                  <button onclick="copyToClipboard('${trackUrl}'); closeAllMenus();" class="w-full text-left px-3 py-1.5 hover:bg-slate-50 font-medium text-slate-700 flex items-center gap-1.5">
-                    📋 Sao chép
-                  </button>
-                  <button onclick="deleteOneLink('${ch.slug}', 'dash')" class="w-full text-left px-3 py-1.5 hover:bg-rose-50 font-bold text-rose-600 flex items-center gap-1.5">
-                    🗑️ Xóa link
-                  </button>
-                </div>
-              </div>
-            </td>
+            <td class="py-4 px-4 whitespace-nowrap min-w-[140px]">${lastClickHtml}</td>
           </tr>
         `;
       });
@@ -962,7 +957,7 @@ Reviewer Mai Anh" class="w-full px-4 py-3 text-sm font-mono border border-slate-
         if (repoChkAll) repoChkAll.checked = false;
 
         if (allLinksData.length === 0) {
-          tbody.innerHTML = `<tr><td colspan="8" class="text-center py-8 text-slate-400">Kho link đang trống. Chị hãy tạo link ở form phía trên nhé!</td></tr>`;
+          tbody.innerHTML = `<tr><td colspan="7" class="text-center py-8 text-slate-400">Kho link đang trống. Chị hãy tạo link ở form phía trên nhé!</td></tr>`;
           updateBatchActionUI('repo');
           return;
         }
@@ -972,45 +967,29 @@ Reviewer Mai Anh" class="w-full px-4 py-3 text-sm font-mono border border-slate-
           const trackUrl = `${origin}/r/${link.slug}`;
           const isKol = (link.channel_group === 'KOL');
           const grpBadge = isKol 
-            ? `<span class="px-2 py-0.5 text-[11px] font-bold bg-purple-100 text-purple-700 rounded-full border border-purple-200">🌟 KOL</span>`
-            : `<span class="px-2 py-0.5 text-[11px] font-bold bg-slate-100 text-slate-800 rounded-full border border-slate-200">🏢 Nội bộ</span>`;
+            ? `<span class="inline-flex items-center gap-1 px-2.5 py-1 text-xs font-bold bg-purple-100 text-purple-700 rounded-full border border-purple-200 whitespace-nowrap">🌟 KOL</span>`
+            : `<span class="inline-flex items-center gap-1 px-2.5 py-1 text-xs font-bold bg-slate-100 text-slate-800 rounded-full border border-slate-200 whitespace-nowrap">🏢 Nội bộ</span>`;
 
           html += `
             <tr class="hover:bg-slate-50/80 transition">
               <td class="py-3.5 px-4 text-center">
                 <input type="checkbox" value="${link.slug}" onchange="updateBatchActionUI('repo')" class="repo-row-check w-4 h-4 rounded text-black focus:ring-black">
               </td>
-              <td class="py-3.5 px-4">${getPlatformBadge(link.platform)}</td>
-              <td class="py-3.5 px-4">${grpBadge}</td>
-              <td class="py-3.5 px-4 font-bold text-slate-900">${link.channel_name}</td>
-              <td class="py-3.5 px-4">
-                <div class="flex items-center gap-2">
-                  <span class="font-mono text-xs font-bold text-slate-800 bg-slate-100 px-2 py-1 rounded border border-slate-200 select-all">${trackUrl}</span>
-                  <button onclick="copyToClipboard('${trackUrl}')" title="Sao chép link" class="p-1 text-slate-400 hover:text-black transition">
+              <td class="py-3.5 px-4 whitespace-nowrap">${getPlatformBadge(link.platform)}</td>
+              <td class="py-3.5 px-4 whitespace-nowrap min-w-[120px]">${grpBadge}</td>
+              <td class="py-3.5 px-4 font-bold text-slate-900 text-sm min-w-[150px]">${link.channel_name}</td>
+              <td class="py-3.5 px-4 max-w-[210px]">
+                <div class="flex items-center gap-1.5">
+                  <span class="font-mono text-xs font-bold text-slate-800 bg-slate-100 px-2 py-0.5 rounded border border-slate-200 truncate max-w-[160px] select-all" title="${trackUrl}">${trackUrl}</span>
+                  <button onclick="copyToClipboard('${trackUrl}')" title="Sao chép link" class="p-1 text-slate-400 hover:text-black transition flex-shrink-0">
                     📋
                   </button>
                 </div>
               </td>
-              <td class="py-3.5 px-4 text-xs text-slate-500 truncate max-w-[160px]" title="${link.destination_url}">
+              <td class="py-3.5 px-4 text-xs text-slate-500 truncate max-w-[180px]" title="${link.destination_url}">
                 ${link.destination_url}
               </td>
               <td class="py-3.5 px-4 text-xs text-slate-400 whitespace-nowrap">${link.created_at || ''}</td>
-              <td class="py-3.5 px-4 text-right">
-                <!-- Mục ba chấm cho từng dòng trong Kho link -->
-                <div class="relative inline-block text-left">
-                  <button onclick="toggleMenu('menu-repo-row-${idx}')" class="p-1.5 rounded-lg hover:bg-slate-200 transition text-slate-600 font-black text-sm">
-                    •••
-                  </button>
-                  <div id="menu-repo-row-${idx}" class="hidden absolute right-0 mt-1 w-36 bg-white rounded-xl shadow-xl border border-slate-100 py-1 z-50 text-xs">
-                    <button onclick="copyToClipboard('${trackUrl}'); closeAllMenus();" class="w-full text-left px-3 py-1.5 hover:bg-slate-50 font-medium text-slate-700 flex items-center gap-1.5">
-                      📋 Sao chép
-                    </button>
-                    <button onclick="deleteOneLink('${link.slug}', 'repo')" class="w-full text-left px-3 py-1.5 hover:bg-rose-50 font-bold text-rose-600 flex items-center gap-1.5">
-                      🗑️ Xóa link
-                    </button>
-                  </div>
-                </div>
-              </td>
             </tr>
           `;
         });
