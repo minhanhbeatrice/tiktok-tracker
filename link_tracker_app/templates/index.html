@@ -691,14 +691,16 @@ Reviewer Mai Anh" class="w-full px-4 py-3 text-sm font-mono border border-slate-
       const count = checkedBoxes.length;
       const bar = document.getElementById(`${prefix}-batch-actions`);
       const label = document.getElementById(`${prefix}-selected-count`);
+      if (!bar) return;
 
       if (count > 0) {
         bar.classList.remove('hidden');
         bar.classList.add('flex');
-        label.innerText = `Đã chọn ${count} link`;
+        if (label) label.innerText = `Đã chọn ${count} link`;
       } else {
         bar.classList.add('hidden');
         bar.classList.remove('flex');
+        if (label) label.innerText = `Đã chọn 0 link`;
       }
     }
 
@@ -722,8 +724,21 @@ Reviewer Mai Anh" class="w-full px-4 py-3 text-sm font-mono border border-slate-
         const json = await res.json();
         if (json.success) {
           showToast(`Đã xóa thành công ${slugs.length} link!`, '🗑️');
-          if (prefix === 'dash') loadDashboardData();
-          else loadRepoLinks();
+          
+          // Reset toàn bộ trạng thái chọn và ẩn thanh tác vụ ngay lập tức
+          ['dash', 'repo'].forEach(p => {
+            const chkAll = document.getElementById(`${p}-check-all`);
+            if (chkAll) chkAll.checked = false;
+            document.querySelectorAll(`.${p}-row-check`).forEach(cb => cb.checked = false);
+            const bar = document.getElementById(`${p}-batch-actions`);
+            if (bar) {
+              bar.classList.add('hidden');
+              bar.classList.remove('flex');
+            }
+          });
+
+          await loadDashboardData();
+          await loadRepoLinks();
         }
       } catch (e) {
         alert('Có lỗi xảy ra khi xóa hàng loạt.');
@@ -866,11 +881,12 @@ Reviewer Mai Anh" class="w-full px-4 py-3 text-sm font-mono border border-slate-
       const tbody = document.getElementById('channels-table-body');
       const origin = window.location.origin;
 
-      document.getElementById('dash-check-all').checked = false;
-      updateBatchActionUI('dash');
+      const dashChkAll = document.getElementById('dash-check-all');
+      if (dashChkAll) dashChkAll.checked = false;
 
       if (!channels || channels.length === 0) {
         tbody.innerHTML = `<tr><td colspan="10" class="text-center py-8 text-slate-400">Chưa có kênh nào trong nhóm này. Chị hãy bấm sang tab <b>"Tạo Link & Kho Link"</b> để tạo nhé!</td></tr>`;
+        updateBatchActionUI('dash');
         return;
       }
 
@@ -926,6 +942,7 @@ Reviewer Mai Anh" class="w-full px-4 py-3 text-sm font-mono border border-slate-
         `;
       });
       tbody.innerHTML = html;
+      updateBatchActionUI('dash');
     }
 
     // ================== LOAD KHO LINK TRONG TAB TẠO LINK ==================
@@ -941,11 +958,12 @@ Reviewer Mai Anh" class="w-full px-4 py-3 text-sm font-mono border border-slate-
         const tbody = document.getElementById('repo-table-body');
         const origin = window.location.origin;
 
-        document.getElementById('repo-check-all').checked = false;
-        updateBatchActionUI('repo');
+        const repoChkAll = document.getElementById('repo-check-all');
+        if (repoChkAll) repoChkAll.checked = false;
 
         if (allLinksData.length === 0) {
           tbody.innerHTML = `<tr><td colspan="8" class="text-center py-8 text-slate-400">Kho link đang trống. Chị hãy tạo link ở form phía trên nhé!</td></tr>`;
+          updateBatchActionUI('repo');
           return;
         }
 
@@ -997,6 +1015,7 @@ Reviewer Mai Anh" class="w-full px-4 py-3 text-sm font-mono border border-slate-
           `;
         });
         tbody.innerHTML = html;
+        updateBatchActionUI('repo');
       } catch (e) {
         console.error("Lỗi tải kho link", e);
       }
@@ -1053,8 +1072,8 @@ Reviewer Mai Anh" class="w-full px-4 py-3 text-sm font-mono border border-slate-
       try {
         await fetch('/api/links/' + slug, { method: 'DELETE' });
         showToast('Đã xóa link thành công', '🗑️');
-        if (source === 'dash') loadDashboardData();
-        else loadRepoLinks();
+        await loadDashboardData();
+        await loadRepoLinks();
       } catch (e) {
         alert('Có lỗi khi xóa link.');
       }
